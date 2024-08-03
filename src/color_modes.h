@@ -4,7 +4,7 @@
 #include "types.h"
 #include "utils.h"
 #include "pixeltypes.h"
-
+#include "audio_analyzer.h"
 
 
 void set_mode(App &ctx, ColorMode mode) {
@@ -46,6 +46,9 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
                     RAINBOW_MODE_MIN_DELAY_MS,
                     RAINBOW_MODE_MAX_DELAY_MS
             );
+            break;
+        case COLOR_MUSIC:
+            if (offset > 0) ctx.analyzer.need_calibration = true;
             break;
     }
 }
@@ -119,13 +122,97 @@ void fill_white_mode(App &ctx) {
     }
 }
 
+
+
+#define LOW_START_AMPLITUDE_INDEX 1
+#define LOW_END_AMPLITUDE_INDEX 1
+#define LOW_MULTIPLICATION_AMPLITUDE 2
+
+#define MIDDLE_START_AMPLITUDE_INDEX 8
+#define MIDDLE_END_AMPLITUDE_INDEX 32
+#define MIDDLE_MULTIPLICATION_AMPLITUDE 0.1
+
+#define HIGH_START_AMPLITUDE_INDEX 119
+#define HIGH_END_AMPLITUDE_INDEX 127
+#define HIGH_MULTIPLICATION_AMPLITUDE 0.7
+
 void color_music(App &ctx) {
 
     exit_timer(ctx.cfg_modes.color_music_delay_ms);
 
-    for (int i = 0; i < AMPLITUDES_N and i < NUM_LEDS; ++i) {
-        ctx.leds[i] = CHSV(i, 255, ctx.analyzer.amplitudes[i+1]);
+    uint8_t segment_id = 0;
+    uint16_t ampl = ctx.analyzer.amplitudes[segment_id + 1];
+    put_amplitude_to_history(ampl << 1, ctx.analyzer.history[segment_id]);
+    int16_t bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].minimum * 1.2);
+    bright = constrain(bright * 1.5, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(bright, 0, 0));
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 2; i < 5; ++i) ampl += ctx.analyzer.amplitudes[i];
+    put_amplitude_to_history(ampl, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].average);
+    bright = constrain(bright * 1.5, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(bright, bright >> 1, 0));
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 7; i < 10; ++i) ampl += ctx.analyzer.amplitudes[i];
+    put_amplitude_to_history(ampl, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].average * 1.4);
+    bright = constrain(bright, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(bright, bright, 0));
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 10; i < 13; ++i) ampl += ctx.analyzer.amplitudes[i];
+    put_amplitude_to_history(ampl, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].average * 1.2);
+    bright = constrain(bright * 1.5, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(bright >> 1, bright, 0));
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 13; i < 16; ++i) ampl += ctx.analyzer.amplitudes[i];
+    put_amplitude_to_history(ampl, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].minimum * 1.4);
+    bright = constrain(bright, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(0, bright, bright >> 1));
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 16; i < 19; ++i) {
+        if (ctx.analyzer.amplitudes[i] < ctx.analyzer.history[segment_id].average) continue;
+        ampl += ctx.analyzer.amplitudes[i];
     }
+    put_amplitude_to_history(ampl >> 1, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].average * 1.4);
+    bright = constrain(bright, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(0, bright >> 1, bright));
+
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 50; i < 55; ++i) {
+        if (ctx.analyzer.amplitudes[i] < ctx.analyzer.history[segment_id].minimum) continue;
+        ampl += ctx.analyzer.amplitudes[i];
+    }
+    put_amplitude_to_history(ampl, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].average * 1.2);
+    bright = constrain(bright * 1.5, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(0, 0, bright));
+
+
+    segment_id++;
+    ampl = 0;
+    for (int i = 100; i < 107; ++i) {
+        if (ctx.analyzer.amplitudes[i] < ctx.analyzer.history[segment_id].minimum) continue;
+        ampl += ctx.analyzer.amplitudes[i];
+    }
+    put_amplitude_to_history(ampl >> 1, ctx.analyzer.history[segment_id]);
+    bright = ctx.analyzer.history[segment_id].data[0] - uint8_t(ctx.analyzer.history[segment_id].average * 1.2);
+    bright = constrain(bright * 1.5, 0, 255);
+    write_color_to_segment(segment_id, ctx, CRGB(bright >> 1, 0, bright));
 
 }
 

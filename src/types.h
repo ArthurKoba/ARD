@@ -22,8 +22,12 @@
 
 #define MODE_3_DELAY_MS 20
 
-#ifndef LENGTH_COLOR_AMPLITUDES
+#ifndef LENGTH_OF_SMOOTHED_AMPLITUDES
 #define LENGTH_OF_SMOOTHED_AMPLITUDES 16
+#endif
+
+#ifndef LENGTH_AMPLITUDES_HISTORY
+#define LENGTH_COLOR_AMPLITUDES 16
 #endif
 
 struct WhiteModeCfg {
@@ -53,7 +57,7 @@ struct ColorModesConfigs {
     FillWhiteModeCfg fill_white;
     RainbowModeCfg rainbow;
     uint8_t mode_3_delay_ms = MODE_3_DELAY_MS;
-    uint8_t color_music_delay_ms = 1;
+    uint8_t color_music_delay_ms = 10;
 };
 
 enum ColorMode {
@@ -67,7 +71,16 @@ struct Segment {
     uint16_t end;
 };
 
+struct AmplitudeHistory {
+    uint8_t minimum = 0;
+    uint8_t maximum = 0;
+    uint8_t delta = 0;
+    uint8_t average = 0;
+    uint8_t data[LENGTH_COLOR_AMPLITUDES] = {0};
+};
+
 struct AnalyzerConfigs {
+    AmplitudeHistory history[8];
     uint8_t *amplitudes = nullptr;
     uint8_t smoothing_amplitudes[LENGTH_OF_SMOOTHED_AMPLITUDES];
     int16_t *samples = nullptr;

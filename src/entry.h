@@ -31,7 +31,15 @@ void main_setup() {
 }
 
 void main_loop() {
+//    Serial.print(1023);
+//    Serial.print(',');
+//    Serial.print(0);
+//    Serial.print(',');
+//    Serial.println(int(analogRead(AUDIO_PIN)));
+//    return;
+#if not defined(KOBA_CONF)
     check_buttons(context);
+#endif
     switch (context.mode) {
         case WHITE_MODE:
             white_mode(context);

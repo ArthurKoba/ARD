@@ -11,6 +11,21 @@
 #endif
 
 
+void put_amplitude_to_history(uint8_t value, AmplitudeHistory &history) {
+    history.minimum = value;
+    history.maximum = value;
+    uint16_t average = value;
+    for (uint8_t i = LENGTH_COLOR_AMPLITUDES - 1; i > 0; i--) {
+        history.data[i] = history.data[i-1];
+        average += history.data[i];
+        if (history.minimum > history.data[i]) history.minimum = history.data[i];
+        if (history.maximum < history.data[i]) history.maximum = history.data[i];
+    }
+    history.average = average / LENGTH_COLOR_AMPLITUDES;
+    history.delta = history.maximum - history.minimum;
+    history.data[0] = value;
+}
+
 void fht_process(AnalyzerConfigs &cfg) {
     fht_window();
     fht_reorder();
@@ -69,6 +84,8 @@ void init_audio_analyzer(AnalyzerConfigs &cfg) {
 
 #if not defined(KOBA_CONF)
     analogReference(INTERNAL2V56);
+#else
+    analogReference(EXTERNAL);
 #endif
 
     _SFR_BYTE(ADCSRA) &= ~_BV(ADPS1);
