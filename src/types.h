@@ -22,6 +22,10 @@
 
 #define MODE_3_DELAY_MS 20
 
+#ifndef LENGTH_COLOR_AMPLITUDES
+#define LENGTH_OF_SMOOTHED_AMPLITUDES 16
+#endif
+
 struct WhiteModeCfg {
     uint8_t bright = MAX_BRIGHT_WHITE_MODE;
     uint8_t delay_ms = WHITE_MODE_DELTA_MS;
@@ -48,17 +52,13 @@ struct ColorModesConfigs {
     CreativeModeCfg creative;
     FillWhiteModeCfg fill_white;
     RainbowModeCfg rainbow;
-
-
-
     uint8_t mode_3_delay_ms = MODE_3_DELAY_MS;
-
 };
 
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE,
 //    MODE_4, MODE_5, MODE_6
-    MODE_3, RAINBOW_MODE
+    MODE_3, COLOR_MUSIC, RAINBOW_MODE
 };
 
 struct Segment {
@@ -66,11 +66,27 @@ struct Segment {
     uint16_t end;
 };
 
+struct AnalyzerConfigs {
+    uint8_t *amplitudes = nullptr;
+    uint8_t smoothing_amplitudes[LENGTH_OF_SMOOTHED_AMPLITUDES];
+    int16_t *samples = nullptr;
+
+    int16_t delay_reading_samples_us = 30;
+    int16_t sample_offset = 511;
+
+    uint16_t sampling_frequency = 0;
+    int16_t signal_median_amplitude = 0;
+    int16_t signal_amplitude = 0;
+    uint32_t time_of_last_signal = 0;
+    bool need_calibration = true;
+};
+
 struct App {
     ColorMode mode = WHITE_MODE;
     ColorModesConfigs cfg_modes;
     CRGB leds[NUM_LEDS]; // Define the array of leds
     Segment segments[8];
+    AnalyzerConfigs analyzer;
 };
 
 #endif //ARD_TYPES_H

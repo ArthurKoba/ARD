@@ -11,6 +11,7 @@
 //#include "ir_remote.h"
 //#include "eeprom_saves.h"
 #include "color_modes.h"
+#include "audio_analyzer.h"
 #include "utils.h"
 
 
@@ -21,12 +22,12 @@ void main_setup() {
     Serial.begin(115200);
 //     EEPROM.begin(1024);
     //    read_eeprom();
-
+    init_audio_analyzer(context.analyzer);
     init_buttons();
     CFastLED::addLeds<LED_TYPE, STRIP_PIN, COLOR_ORDER>(context.leds, NUM_LEDS);
     FastLED.setCorrection(TypicalLEDStrip);
     init_segments(context);
-    set_mode(context, CREATIVE_MODE);
+    set_mode(context, COLOR_MUSIC);
 }
 
 void main_loop() {
@@ -50,9 +51,18 @@ void main_loop() {
 //            break;
 //        case MODE_6:
 //            break;
+        case COLOR_MUSIC:
+            if (context.analyzer.need_calibration) {
+                calibrate_audio_analyzer(context.analyzer);
+            } else {
+                readSamples(context.analyzer);
+                fht_process(context.analyzer);
+            }
+            break;
         case RAINBOW_MODE:
             rainbow_mode(context);
             break;
+
     }
     FastLED.show();
 }

@@ -1,7 +1,10 @@
 #ifndef ARD_CONFIG_H
 #define ARD_CONFIG_H
 
+#include <Arduino.h>
+
 #define IR_PIN 7
+#define AUDIO_PIN A0
 
 #if not defined(KOBA_CONF)
 #define STRIP_PIN 2 // For led chips like Neopixels, which have a data line, ground, and power, you just need to define DATA_PIN
@@ -76,5 +79,10 @@
 
 #define NUM_LEDS (SECTOR_8_END + 1)
 #define BUTTONS_DELAY_MS 200
+
+#define LOG_OUT 1
+#define FHT_N 256
+#define AMPLITUDES_N (FHT_N / 2)
+#define LENGTH_OF_SMOOTHED_AMPLITUDES 16
 
 #endif //ARD_CONFIG_H
