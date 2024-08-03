@@ -12,29 +12,29 @@
 #define LED_TYPE WS2813
 #define COLOR_ORDER RGB
 
-#define SECTOR_1_START 0  //232
-#define SECTOR_1_END 231
+#define SECTOR_1_START 0
+#define SECTOR_1_END 215
 
-#define SECTOR_2_START 232 //69
-#define SECTOR_2_END 300
+#define SECTOR_2_START 216
+#define SECTOR_2_END 267
 
-#define SECTOR_3_START 301  //32
-#define SECTOR_3_END 332
+#define SECTOR_3_START 268
+#define SECTOR_3_END 299
 
-#define SECTOR_4_START 333  //24
-#define SECTOR_4_END 356
+#define SECTOR_4_START 300
+#define SECTOR_4_END 323
 
-#define SECTOR_5_START 357  //22
-#define SECTOR_5_END 378
+#define SECTOR_5_START 324
+#define SECTOR_5_END 350
 
-#define SECTOR_6_START 379 //12
-#define SECTOR_6_END 390
+#define SECTOR_6_START 351
+#define SECTOR_6_END 362
 
-#define SECTOR_7_START 391 //7
-#define SECTOR_7_END 397
+#define SECTOR_7_START 363
+#define SECTOR_7_END 374
 
-#define SECTOR_8_START 398 //1
-#define SECTOR_8_END 399
+#define SECTOR_8_START 375
+#define SECTOR_8_END 376
 
 #else
 #define STRIP_PIN 16 // 16-17 left right
