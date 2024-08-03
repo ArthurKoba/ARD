@@ -54,9 +54,15 @@ void main_loop() {
         case COLOR_MUSIC:
             if (context.analyzer.need_calibration) {
                 calibrate_audio_analyzer(context.analyzer);
+                if (context.analyzer.need_calibration) {
+                    blink_mode(context);
+                } else {
+                    fill_leds(context, CRGB::Black);
+                }
             } else {
                 readSamples(context.analyzer);
                 fht_process(context.analyzer);
+                color_music(context);
             }
             break;
         case RAINBOW_MODE:

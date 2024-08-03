@@ -119,17 +119,14 @@ void fill_white_mode(App &ctx) {
     }
 }
 
-void rainbow_mode(App &ctx) {
-    // Радуга
-    static uint8_t current_index = 0;
+void color_music(App &ctx) {
 
-    exit_timer(ctx.cfg_modes.rainbow.delay_ms);
+    exit_timer(ctx.cfg_modes.color_music_delay_ms);
 
-    for (int segment_id = 0; segment_id < 8; ++segment_id) {
-        uint8_t hue = current_index + ctx.cfg_modes.rainbow.hue_offset * segment_id;
-        write_color_to_segment(segment_id,ctx,CHSV(hue,255,255));
+    for (int i = 0; i < AMPLITUDES_N and i < NUM_LEDS; ++i) {
+        ctx.leds[i] = CHSV(i, 255, ctx.analyzer.amplitudes[i+1]);
     }
-    current_index++;
+
 }
 
 void mode_3(App &ctx) {
@@ -178,5 +175,26 @@ void mode_3(App &ctx) {
     ));
 }
 
+void rainbow_mode(App &ctx) {
+    // Радуга
+    static uint8_t current_index = 0;
+
+    exit_timer(ctx.cfg_modes.rainbow.delay_ms);
+
+    for (int segment_id = 0; segment_id < 8; ++segment_id) {
+        uint8_t hue = current_index + ctx.cfg_modes.rainbow.hue_offset * segment_id;
+        write_color_to_segment(segment_id,ctx,CHSV(hue,255,255));
+    }
+    current_index++;
+}
+
+void blink_mode(App &ctx) {
+    static bool is_white = true;
+
+    exit_timer(200);
+
+    fill_leds(ctx, is_white? CRGB::White : CRGB::Black);
+    is_white = not is_white;
+}
 
 #endif //ARD_COLOR_MODES_H

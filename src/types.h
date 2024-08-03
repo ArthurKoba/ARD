@@ -53,6 +53,7 @@ struct ColorModesConfigs {
     FillWhiteModeCfg fill_white;
     RainbowModeCfg rainbow;
     uint8_t mode_3_delay_ms = MODE_3_DELAY_MS;
+    uint8_t color_music_delay_ms = 1;
 };
 
 enum ColorMode {

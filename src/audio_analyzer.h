@@ -59,6 +59,8 @@ void calibrate_audio_analyzer(AnalyzerConfigs &cfg) {
        cfg.need_calibration = false;
        Serial.print(F("Sampling Freq: "));
        Serial.println(cfg.sampling_frequency);
+       Serial.print(F("Samples offset: "));
+       Serial.println(cfg.sample_offset);
     }
 }
 
