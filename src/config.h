@@ -4,9 +4,13 @@
 #include <Arduino.h>
 
 #define IR_PIN 7
-#define AUDIO_PIN A0
+
 
 #if not defined(KOBA_CONF)
+
+#define SILENCE_AMPLITUDE_LEVEL 50
+
+#define AUDIO_PIN A0
 #define STRIP_PIN 2 // For led chips like Neopixels, which have a data line, ground, and power, you just need to define DATA_PIN
 #define CHANGE_MODE_PIN 4
 #define DECREASE_PIN 5
@@ -40,11 +44,19 @@
 #define SECTOR_8_END 376
 
 #else
-#define STRIP_PIN 16 // 16-17 left right
 
-#define CHANGE_MODE_PIN 3
-#define DECREASE_PIN 12
-#define INCREASE_PIN 11
+#define SILENCE_AMPLITUDE_LEVEL 30
+#define AUDIO_PIN A2
+#define STRIP_PIN 4 // 16-17 left right
+
+#define CHANGE_MODE_PIN 9
+#define DECREASE_PIN 8
+#define INCREASE_PIN 7
+
+//#define STRIP_PIN 16 // 16-17 left right
+//#define CHANGE_MODE_PIN 3
+//#define DECREASE_PIN 12
+//#define INCREASE_PIN 11
 
 #define BUTTONS_REVERSE_LEVELS
 
