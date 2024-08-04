@@ -24,7 +24,6 @@
 #if not defined(FILL_WHITE_MODE_MIN_DELAY_MS)
 #define FILL_WHITE_MODE_MIN_DELAY_MS 1
 #endif
-
 #if not defined(FILL_WHITE_MODE_MAX_DELAY_MS)
 #define FILL_WHITE_MODE_MAX_DELAY_MS 50
 #endif
@@ -104,25 +103,25 @@
 #define FIRE_MODE_MAX_DELAY_MS 100
 #endif
 #if not defined(FIRE_MODE_HUE_GAP)
-#define FIRE_MODE_HUE_GAP 21      // заброс по оттенку
+#define FIRE_MODE_HUE_GAP 21
 #endif
 #if not defined(FIRE_MODE_FIRE_STEP)
-#define FIRE_MODE_FIRE_STEP 30    // шаг огня
+#define FIRE_MODE_FIRE_STEP 30
 #endif
 #if not defined(FIRE_MODE_HUE_START)
-#define FIRE_MODE_HUE_START 0     // начальный цвет огня (0 красный, 80 зелёный, 140 молния, 190 розовый)
+#define FIRE_MODE_HUE_START 0
 #endif
 #if not defined(FIRE_MODE_MIN_BRIGHT)
-#define FIRE_MODE_MIN_BRIGHT 70   // минимальная яркость огня
+#define FIRE_MODE_MIN_BRIGHT 70
 #endif
 #if not defined(FIRE_MODE_MAX_BRIGHT)
-#define FIRE_MODE_MAX_BRIGHT 255  // макс. яркость огня
+#define FIRE_MODE_MAX_BRIGHT 255
 #endif
 #if not defined(FIRE_MODE_MIN_SAT)
-#define FIRE_MODE_MIN_SAT 245     // максимальная насыщенность
+#define FIRE_MODE_MIN_SAT 245
 #endif
 #if not defined(FIRE_MODE_MAX_SAT)
-#define FIRE_MODE_MAX_SAT 255     // максимальная насыщенность
+#define FIRE_MODE_MAX_SAT 255
 #endif
 
 #if not defined(COLOR_MUSIC_DEF_DELAY_MS)

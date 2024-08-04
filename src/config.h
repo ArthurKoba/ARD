@@ -5,12 +5,61 @@
 
 #define BUTTONS_DELAY_MS 200 // Задержка между действиями кнопок.
 
+#define WHITE_MODE_DEF_DELAY_MS 100
+#define WHITE_MODE_MIN_BRIGHT 10
+#define WHITE_MODE_MAX_BRIGHT 255
+
+#define CREATIVE_MODE_DEF_DELAY_MS 30
+
+#define FILL_WHITE_MODE_DEF_DELAY_MS 20
+#define FILL_WHITE_MODE_MIN_DELAY_MS 1
+#define FILL_WHITE_MODE_MAX_DELAY_MS 50
+#define FILL_WHITE_MODE_COUNT_WAIT 100
+
+#define TO_CENTER_MODE_DEF_DELAY_MS 750
+#define TO_CENTER_MODE_MIN_DELAY_MS 100
+#define TO_CENTER_MODE_MAX_DELAY_MS 10000
+
+#define FADE_MODE_DEF_DELAY_MS 10
+#define FADE_MODE_MIN_DELAY_MS 0
+#define FADE_MODE_MAX_DELAY_MS 100
+
+#define RAINBOW_MODE_DEF_DELAY_MS 30
+#define RAINBOW_MODE_MIN_DELAY_MS 1
+#define RAINBOW_MODE_MAX_DELAY_MS 50
+#define RAINBOW_MODE_HUE_OFFSET 31
+
+#define RAINBOW2_MODE_DEF_DELAY_MS 30
+#define RAINBOW2_MODE_MIN_DELAY_MS 1
+#define RAINBOW2_MODE_MAX_DELAY_MS 50
+#define RAINBOW2_MODE_HUE_MUL 1
+
+#define RAINBOW3_MODE_DEF_DELAY_MS 5
+#define RAINBOW3_MODE_MIN_DELAY_MS 1
+#define RAINBOW3_MODE_MAX_DELAY_MS 50
+#define RAINBOW3_MODE_HUE_MUL 1
+#define RAINBOW3_MODE_SEGMENTS_OFFSET 31
+
+#define FIRE_MODE_DEF_DELAY_MS 30
+#define FIRE_MODE_MIN_DELAY_MS 1
+#define FIRE_MODE_MAX_DELAY_MS 100
+#define FIRE_MODE_HUE_GAP 21      // заброс по оттенку
+#define FIRE_MODE_FIRE_STEP 30    // шаг огня
+#define FIRE_MODE_HUE_START 0     // начальный цвет огня (0 красный, 80 зелёный, 140 молния, 190 розовый)
+#define FIRE_MODE_MIN_BRIGHT 70   // минимальная яркость огня
+#define FIRE_MODE_MAX_BRIGHT 255  // макс. яркость огня
+#define FIRE_MODE_MIN_SAT 245     // максимальная насыщенность
+#define FIRE_MODE_MAX_SAT 255     // максимальная насыщенность
+
+#define COLOR_MUSIC_DEF_DELAY_MS 10
+
 #if not defined(KOBA_CONF)
 
 #define SERIAL_SPEED 115200 // Скорость последовательного порта
 
-#define SILENCE_AMPLITUDE_LEVEL 50 // Верхний порог амплитуды сигнала во время тишины. Необходимо для калибровки анализатора частот.
 #define AUDIO_PIN 54 //  Пин аудио-сигнала (микрофона). Для меги: A0 - 54; A1 - 55, ..., A15 - 69. В общем смотрим pinout платы.
+#define SILENCE_AMPLITUDE_LEVEL 50 // Верхний порог амплитуды сигнала во время тишины. Необходимо для калибровки анализатора частот.
+#define DEFAULT_SAMPLE_OFFSET 500
 
 #define STRIP_PIN 2 // Пин к которому подключена адресная лента (Вывод Data)
 #define CHANGE_MODE_PIN 4 // Пин кнопки смены режима
@@ -47,6 +96,7 @@
 
 #else
 
+#define DEFAULT_SAMPLE_OFFSET 511
 #define SILENCE_AMPLITUDE_LEVEL 30
 #define AUDIO_PIN 16 // Пин аудио-сигнала (микрофона). Для Nano: A0 - 14; A1 - 15, ..., A7 - 21.
 #define STRIP_PIN 4

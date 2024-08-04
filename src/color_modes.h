@@ -229,7 +229,7 @@ void fire_mode(App &ctx) {
 
     static uint16_t counter = 0;
 
-    exit_timer(20);
+    exit_timer(ctx.cfg_modes.fire_mode_delay_ms);
 
     for(int i = 0; i < NUM_LEDS; i++) {
         uint8_t value = inoise8(i * FIRE_MODE_FIRE_STEP, counter);
