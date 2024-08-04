@@ -17,7 +17,7 @@
 #define INCREASE_PIN 6
 
 #define LED_TYPE WS2813
-#define COLOR_ORDER RGB
+#define COLOR_ORDER GRB
 
 #define SECTOR_1_START 0
 #define SECTOR_1_END 215
@@ -49,7 +49,7 @@
 #define AUDIO_PIN A2
 #define STRIP_PIN 4 // 16-17 left right
 
-#define CHANGE_MODE_PIN 9
+#define CHANGE_MODE_PIN 6
 #define DECREASE_PIN 8
 #define INCREASE_PIN 7
 
