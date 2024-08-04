@@ -74,6 +74,13 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
                     RAINBOW3_MODE_MAX_DELAY_MS
             );
             break;
+        case FIRE_MODE:
+            ctx.cfg_modes.fire_mode_delay_ms = constrain(
+                    int(ctx.cfg_modes.fire_mode_delay_ms) + offset,
+                    FIRE_MODE_MIN_DELAY_MS,
+                    FIRE_MODE_MAX_DELAY_MS
+            );
+            break;
         case COLOR_MUSIC:
             if (offset > 0) ctx.analyzer.need_calibration = true;
             break;
@@ -209,13 +216,30 @@ void rainbow3_mode(App &ctx) {
     for (int segment_id = 0; segment_id < 8; ++segment_id) {
         for (uint16_t i = ctx.segments[segment_id].start; i < ctx.segments[segment_id].end + 1; ++i) {
             uint8_t hue = (segment_id % 2 ? current_index : current_index_inverse) +
-                    i * RAINBOW3_MODE_HUE_MUL + segment_id * RAINBOW3_MODE_SEGMENTS_MUL;
+                    i * RAINBOW3_MODE_HUE_MUL + segment_id * RAINBOW3_MODE_SEGMENTS_OFFSET;
             ctx.leds[i] = CHSV(hue,255, 255);
         }
     }
 
     current_index++;
     current_index_inverse--;
+}
+
+void fire_mode(App &ctx) {
+
+    static uint16_t counter = 0;
+
+    exit_timer(20);
+
+    for(int i = 0; i < NUM_LEDS; i++) {
+        uint8_t value = inoise8(i * FIRE_MODE_FIRE_STEP, counter);
+        ctx.leds[i] = CHSV(
+                FIRE_MODE_HUE_START + map(value, 0, 255, 0, FIRE_MODE_HUE_GAP),
+            constrain(map(value, 0, 255, FIRE_MODE_MAX_SAT, FIRE_MODE_MIN_SAT), 0, 255),
+            constrain(map(value, 0, 255, FIRE_MODE_MIN_BRIGHT, FIRE_MODE_MAX_BRIGHT), 0, 255)
+        );
+    }
+    counter += 20;
 }
 
 #define LOW_START_AMPLITUDE_INDEX 1
@@ -329,6 +353,9 @@ void show_color_modes(App &ctx) {
         case MOVE_TO_CENTER_MODE:   move_to_center_mode(ctx);   break;
         case FADE_MODE:             fade_mode(ctx);             break;
         case RAINBOW_MODE:          rainbow_mode(ctx);          break;
+        case RAINBOW2_MODE:         rainbow2_mode(ctx);         break;
+        case RAINBOW3_MODE:         rainbow3_mode(ctx);         break;
+        case FIRE_MODE:             fire_mode(ctx);             break;
         case COLOR_MUSIC:
             if (ctx.analyzer.need_calibration) {
                 calibrate_audio_analyzer(ctx.analyzer);
@@ -344,12 +371,7 @@ void show_color_modes(App &ctx) {
             }
             break;
 
-        case RAINBOW2_MODE:
-            rainbow2_mode(ctx);
-            break;
-        case RAINBOW3_MODE:
-            rainbow3_mode(ctx);
-            break;
+
     }
     FastLED.show();
 }

@@ -75,7 +75,7 @@
 #define RAINBOW2_MODE_MAX_DELAY_MS 50
 #endif
 #if not defined(RAINBOW2_MODE_HUE_MUL)
-#define RAINBOW2_MODE_HUE_MUL 10
+#define RAINBOW2_MODE_HUE_MUL 1
 #endif // MUL
 
 #if not defined(RAINBOW3_MODE_DEF_DELAY_MS)
@@ -88,10 +88,41 @@
 #define RAINBOW3_MODE_MAX_DELAY_MS 50
 #endif
 #if not defined(RAINBOW3_MODE_HUE_MUL)
-#define RAINBOW3_MODE_HUE_MUL 10
+#define RAINBOW3_MODE_HUE_MUL 1
 #endif
-#if not defined(RAINBOW3_MODE_SEGMENTS_MUL)
-#define RAINBOW3_MODE_SEGMENTS_MUL 31
+#if not defined(RAINBOW3_MODE_SEGMENTS_OFFSET)
+#define RAINBOW3_MODE_SEGMENTS_OFFSET 31
+#endif
+
+#if not defined(FIRE_MODE_DEF_DELAY_MS)
+#define FIRE_MODE_DEF_DELAY_MS 30
+#endif
+#if not defined(FIRE_MODE_MIN_DELAY_MS)
+#define FIRE_MODE_MIN_DELAY_MS 1
+#endif
+#if not defined(FIRE_MODE_MAX_DELAY_MS)
+#define FIRE_MODE_MAX_DELAY_MS 100
+#endif
+#if not defined(FIRE_MODE_HUE_GAP)
+#define FIRE_MODE_HUE_GAP 21      // заброс по оттенку
+#endif
+#if not defined(FIRE_MODE_FIRE_STEP)
+#define FIRE_MODE_FIRE_STEP 30    // шаг огня
+#endif
+#if not defined(FIRE_MODE_HUE_START)
+#define FIRE_MODE_HUE_START 0     // начальный цвет огня (0 красный, 80 зелёный, 140 молния, 190 розовый)
+#endif
+#if not defined(FIRE_MODE_MIN_BRIGHT)
+#define FIRE_MODE_MIN_BRIGHT 70   // минимальная яркость огня
+#endif
+#if not defined(FIRE_MODE_MAX_BRIGHT)
+#define FIRE_MODE_MAX_BRIGHT 255  // макс. яркость огня
+#endif
+#if not defined(FIRE_MODE_MIN_SAT)
+#define FIRE_MODE_MIN_SAT 245     // максимальная насыщенность
+#endif
+#if not defined(FIRE_MODE_MAX_SAT)
+#define FIRE_MODE_MAX_SAT 255     // максимальная насыщенность
 #endif
 
 #if not defined(COLOR_MUSIC_DEF_DELAY_MS)
@@ -120,7 +151,7 @@
 
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE, MOVE_TO_CENTER_MODE, FADE_MODE,
-    RAINBOW_MODE, RAINBOW2_MODE, RAINBOW3_MODE,
+    RAINBOW_MODE, RAINBOW2_MODE, RAINBOW3_MODE, FIRE_MODE,
     COLOR_MUSIC
 };
 
@@ -144,6 +175,7 @@ struct ColorModesConfigs {
     uint8_t rainbow_mode_delay_ms = RAINBOW_MODE_DEF_DELAY_MS;
     uint8_t rainbow2_mode_delay_ms = RAINBOW2_MODE_DEF_DELAY_MS;
     uint8_t rainbow3_mode_delay_ms = RAINBOW3_MODE_DEF_DELAY_MS;
+    uint8_t fire_mode_delay_ms = FIRE_MODE_DEF_DELAY_MS;
     uint8_t color_music_delay_ms = COLOR_MUSIC_DEF_DELAY_MS;
 };
 

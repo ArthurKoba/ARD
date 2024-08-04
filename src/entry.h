@@ -27,7 +27,7 @@ void main_setup() {
     init_segments(context);
     init_audio_analyzer(context.analyzer);
     init_buttons();
-    set_mode(context, RAINBOW3_MODE);
+    set_mode(context, FIRE_MODE);
     init_default_colors_for_creative_mode(context);
 }
 
