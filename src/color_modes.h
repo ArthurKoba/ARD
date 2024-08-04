@@ -8,11 +8,11 @@
 
 
 void set_mode(App &ctx, ColorMode mode) {
-    ctx.mode = mode;
+    ctx.cfg_modes.current_mode = mode;
 }
 
 void exec_increase_or_decrease(App &ctx, int8_t offset) {
-    switch (ctx.mode) {
+    switch (ctx.cfg_modes.current_mode) {
         case WHITE_MODE:
             ctx.cfg_modes.white_mode_bright = constrain(
                 int(ctx.cfg_modes.white_mode_bright) + offset * 10,
@@ -275,7 +275,7 @@ void blink_mode(App &ctx) {
 }
 
 void show_color_modes(App &ctx) {
-    switch (ctx.mode) {
+    switch (ctx.cfg_modes.current_mode) {
         case WHITE_MODE:            white_mode(ctx);            break;
         case CREATIVE_MODE:         creative_mode(ctx);         break;
         case FILL_WHITE_MODE:       fill_white_mode(ctx);       break;

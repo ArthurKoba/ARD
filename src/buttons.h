@@ -6,6 +6,10 @@
 #include "color_modes.h"
 #include "utils.h"
 
+#if not defined(INCREASE_PIN) or not defined(DECREASE_PIN) or not defined(CHANGE_MODE_PIN)
+#error INCREASE_PIN or DECREASE_PIN or CHANGE_MODE_PIN not defined!!!
+#endif
+
 void init_buttons() {
 #if defined(BUTTONS_REVERSE_LEVELS)
     pinMode(INCREASE_PIN, INPUT_PULLUP);

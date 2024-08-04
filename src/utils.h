@@ -6,15 +6,37 @@
 #include "stdint.h"
 #include "types.h"
 
+#if not defined(BUTTONS_DELAY_MS)
+#define BUTTONS_DELAY_MS 100
+#endif
+
+#if not defined(SECTOR_1_START) or not defined(SECTOR_1_END) or not defined(SECTOR_2_START) or not defined(SECTOR_2_END) or \
+    not defined(SECTOR_3_START) or not defined(SECTOR_3_END) or not defined(SECTOR_4_START) or not defined(SECTOR_4_END) or \
+    not defined(SECTOR_5_START) or not defined(SECTOR_5_END) or not defined(SECTOR_6_START) or not defined(SECTOR_6_END) or \
+    not defined(SECTOR_7_START) or not defined(SECTOR_7_END) or not defined(SECTOR_8_START) or not defined(SECTOR_8_END)
+#error There is an error when declaring sectors
+#endif                                                                                                                             \
+
 void increase_mode(App &ctx) {
-    ctx.mode = static_cast<ColorMode>(static_cast<uint8_t>(ctx.mode) + 1);
-    if (ctx.mode > RAINBOW_MODE) ctx.mode = WHITE_MODE;
+    ctx.cfg_modes.current_mode = static_cast<ColorMode>(static_cast<uint8_t>(ctx.cfg_modes.current_mode) + 1);
+    if (ctx.cfg_modes.current_mode > COLOR_MUSIC) ctx.cfg_modes.current_mode = WHITE_MODE;
 }
 
 void fill_leds(App &ctx, CRGB color, uint16_t start_led = 0, uint16_t end_led = NUM_LEDS) {
     for (uint16_t i = start_led; i < end_led; ++i) {
         ctx.leds[i] = color;
     }
+}
+
+void init_default_colors_for_creative_mode(App &ctx) {
+    ctx.cfg_modes.creative.segment_hues[0] = 42 * 0;
+    ctx.cfg_modes.creative.segment_hues[1] = 42 * 2;
+    ctx.cfg_modes.creative.segment_hues[2] = 42 * 4;
+    ctx.cfg_modes.creative.segment_hues[3] = 42 * 6;
+    ctx.cfg_modes.creative.segment_hues[4] = 42 * 1;
+    ctx.cfg_modes.creative.segment_hues[5] = 42 * 3;
+    ctx.cfg_modes.creative.segment_hues[6] = 42 * 5;
+    ctx.cfg_modes.creative.segment_hues[7] = 255;
 }
 
 void init_segments(App &ctx) {
@@ -33,6 +55,14 @@ void write_color_to_segment(uint8_t segment, App &ctx, CRGB color) {
     for (uint16_t i = ctx.segments[segment].start; i < ctx.segments[segment].end + 1; ++i) {
         ctx.leds[i] = color;
     }
+}
+
+void send_audio_signal_for_plotter(App &ctx) {
+    Serial.print(512);
+    Serial.print(',');
+    Serial.print(-512);
+    Serial.print(',');
+    Serial.println(int(analogRead(AUDIO_PIN)) - ctx.analyzer.sample_offset);
 }
 
 #define exit_timer(delay_ms) \

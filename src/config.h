@@ -3,21 +3,23 @@
 
 #include <Arduino.h>
 
-#define IR_PIN 7
-
+#define BUTTONS_DELAY_MS 200 // Задержка между действиями кнопок.
 
 #if not defined(KOBA_CONF)
 
-#define SILENCE_AMPLITUDE_LEVEL 50
+#define SERIAL_SPEED 115200 // Скорость последовательного порта
 
-#define AUDIO_PIN A0
-#define STRIP_PIN 2 // For led chips like Neopixels, which have a data line, ground, and power, you just need to define DATA_PIN
-#define CHANGE_MODE_PIN 4
-#define DECREASE_PIN 5
-#define INCREASE_PIN 6
+#define SILENCE_AMPLITUDE_LEVEL 50 // Верхний порог амплитуды сигнала во время тишины. Необходимо для калибровки анализатора частот.
+#define AUDIO_PIN 54 //  Пин аудио-сигнала (микрофона). Для меги: A0 - 54; A1 - 55, ..., A15 - 69. В общем смотрим pinout платы.
 
-#define LED_TYPE WS2813
-#define COLOR_ORDER GRB
+#define STRIP_PIN 2 // Пин к которому подключена адресная лента (Вывод Data)
+#define CHANGE_MODE_PIN 4 // Пин кнопки смены режима
+#define DECREASE_PIN 5 // Пин кнопки -
+#define INCREASE_PIN 6 // Пин кнопки +
+//#define BUTTONS_REVERSE_LEVELS // Инверсия кнопок. Напряжение на пине 0 - нажата, 5В - отпущена.
+
+#define LED_TYPE WS2813  // Тип адресной ленты
+#define LED_COLOR_ORDER GRB // Порядок цветов ленты.
 
 #define SECTOR_1_START 0
 #define SECTOR_1_END 215
@@ -46,13 +48,11 @@
 #else
 
 #define SILENCE_AMPLITUDE_LEVEL 30
-#define AUDIO_PIN A2
-#define STRIP_PIN 4 // 16-17 left right
-
+#define AUDIO_PIN 16 // Пин аудио-сигнала (микрофона). Для Nano: A0 - 14; A1 - 15, ..., A7 - 21.
+#define STRIP_PIN 4
 #define CHANGE_MODE_PIN 6
 #define DECREASE_PIN 8
 #define INCREASE_PIN 7
-
 //#define STRIP_PIN 16 // 16-17 left right
 //#define CHANGE_MODE_PIN 3
 //#define DECREASE_PIN 12
@@ -60,8 +60,8 @@
 
 #define BUTTONS_REVERSE_LEVELS
 
-#define LED_TYPE WS2812 // указываем тип ленты
-#define COLOR_ORDER GRB // указываем палитру
+#define LED_TYPE WS2812
+#define LED_COLOR_ORDER GRB
 
 #define SECTOR_1_START 0
 #define SECTOR_1_END 3
@@ -89,12 +89,26 @@
 
 #endif
 
-#define NUM_LEDS (SECTOR_8_END + 1)
-#define BUTTONS_DELAY_MS 200
+//#define LENGTH_OF_SMOOTHED_AMPLITUDES 16 // Массив сглаживания амплитуд.
 
-#define LOG_OUT 1
-#define FHT_N 256
-#define AMPLITUDES_N (FHT_N / 2)
-#define LENGTH_OF_SMOOTHED_AMPLITUDES 16
+// Параметры ниже данной строки изменять нельзя.
+#define NUM_LEDS (SECTOR_8_END + 1)
+
+#if not defined(SERIAL_SPEED)
+#define SERIAL_SPEED 115200
+#endif
+
+#if not defined(STRIP_PIN)
+#error STRIP_PIN not defined!!!
+#endif
+
+
+#if not defined(LED_TYPE)
+#error LED_TYPE not defined!!!
+#endif
+
+#if not defined(LED_COLOR_ORDER)
+#error LED_COLOR_ORDER not defined!!!
+#endif
 
 #endif //ARD_CONFIG_H

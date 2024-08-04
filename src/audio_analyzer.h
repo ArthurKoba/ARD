@@ -1,13 +1,20 @@
 #ifndef ARD_AUDIO_ANALYZER_H
 #define ARD_AUDIO_ANALYZER_H
 
+#define LOG_OUT 1 // Тип амплитуд преобразования Хартли.
+#define FHT_N 256 // Количество измерений сигнала для преобразования Хартли.
+
 #include "config.h"
 #include <Arduino.h>
 #include <FHT.h>
 #include "types.h"
 
-#ifndef SILENCE_AMPLITUDE_LEVEL
-#define SILENCE_AMPLITUDE_LEVEL 15
+#if not defined(SILENCE_AMPLITUDE_LEVEL)
+#error SILENCE_AMPLITUDE_LEVEL not defined!
+#endif
+
+#if not defined(AUDIO_PIN)
+#error AUDIO_PIN not defined!!!
 #endif
 
 
@@ -15,13 +22,13 @@ void put_amplitude_to_history(uint8_t value, AmplitudeHistory &history) {
     history.minimum = value;
     history.maximum = value;
     uint16_t average = value;
-    for (uint8_t i = LENGTH_COLOR_AMPLITUDES - 1; i > 0; i--) {
+    for (uint8_t i = AMPLITUDES_HISTORY_LENGTH - 1; i > 0; i--) {
         history.data[i] = history.data[i-1];
         average += history.data[i];
         if (history.minimum > history.data[i]) history.minimum = history.data[i];
         if (history.maximum < history.data[i]) history.maximum = history.data[i];
     }
-    history.average = average / LENGTH_COLOR_AMPLITUDES;
+    history.average = average / AMPLITUDES_HISTORY_LENGTH;
     history.delta = history.maximum - history.minimum;
     history.data[0] = value;
 }
