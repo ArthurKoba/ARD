@@ -68,7 +68,7 @@ void send_audio_signal_for_plotter(App &ctx) {
 #define exit_timer(delay_ms) \
     static uint32_t last_update = 0; \
     if (millis() - last_update < (delay_ms)) return; \
-    last_update = millis();
+    last_update = millis()
 
 
 #endif //ARD_UTILS_H

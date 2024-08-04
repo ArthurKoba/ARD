@@ -54,10 +54,24 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
 //            Serial.println(ctx.cfg_modes.fade_mode_delay_ms);
             break;
         case RAINBOW_MODE:
-            ctx.cfg_modes.rainbow.delay_ms = constrain(
-                    int(ctx.cfg_modes.rainbow.delay_ms) + offset,
+            ctx.cfg_modes.rainbow_mode_delay_ms = constrain(
+                    int(ctx.cfg_modes.rainbow_mode_delay_ms) + offset,
                     RAINBOW_MODE_MIN_DELAY_MS,
                     RAINBOW_MODE_MAX_DELAY_MS
+            );
+            break;
+        case RAINBOW2_MODE:
+            ctx.cfg_modes.rainbow_mode_delay_ms = constrain(
+                    int(ctx.cfg_modes.rainbow2_mode_delay_ms) + offset,
+                    RAINBOW2_MODE_MIN_DELAY_MS,
+                    RAINBOW2_MODE_MAX_DELAY_MS
+            );
+            break;
+        case RAINBOW3_MODE:
+            ctx.cfg_modes.rainbow_mode_delay_ms = constrain(
+                    int(ctx.cfg_modes.rainbow3_mode_delay_ms) + offset,
+                    RAINBOW3_MODE_MIN_DELAY_MS,
+                    RAINBOW3_MODE_MAX_DELAY_MS
             );
             break;
         case COLOR_MUSIC:
@@ -160,6 +174,50 @@ void fade_mode(App &ctx) {
     fill_leds(ctx, CRGB(bright, bright, bright));
 }
 
+void rainbow_mode(App &ctx) {
+    // Радуга
+    static uint8_t current_index = 0;
+
+    exit_timer(ctx.cfg_modes.rainbow_mode_delay_ms);
+
+    for (int segment_id = 0; segment_id < 8; ++segment_id) {
+        uint8_t hue = current_index + RAINBOW_MODE_HUE_OFFSET * segment_id;
+        write_color_to_segment(segment_id,ctx,CHSV(hue,255,255));
+    }
+    current_index++;
+}
+
+void rainbow2_mode(App &ctx) {
+    // Радуга
+    static uint8_t current_index = 0;
+
+    exit_timer(ctx.cfg_modes.rainbow2_mode_delay_ms);
+
+    for (int i = 0; i < NUM_LEDS; ++i) {
+        ctx.leds[i] = CHSV(current_index + i * RAINBOW2_MODE_HUE_MUL, 255, 255);
+    }
+    current_index++;
+}
+
+void rainbow3_mode(App &ctx) {
+    // Радуга
+    static uint8_t current_index = 0;
+    static uint8_t current_index_inverse = 127;
+
+    exit_timer(ctx.cfg_modes.rainbow3_mode_delay_ms);
+
+    for (int segment_id = 0; segment_id < 8; ++segment_id) {
+        for (uint16_t i = ctx.segments[segment_id].start; i < ctx.segments[segment_id].end + 1; ++i) {
+            uint8_t hue = (segment_id % 2 ? current_index : current_index_inverse) +
+                    i * RAINBOW3_MODE_HUE_MUL + segment_id * RAINBOW3_MODE_SEGMENTS_MUL;
+            ctx.leds[i] = CHSV(hue,255, 255);
+        }
+    }
+
+    current_index++;
+    current_index_inverse--;
+}
+
 #define LOW_START_AMPLITUDE_INDEX 1
 #define LOW_END_AMPLITUDE_INDEX 1
 #define LOW_MULTIPLICATION_AMPLITUDE 2
@@ -252,18 +310,7 @@ void color_music(App &ctx) {
 
 }
 
-void rainbow_mode(App &ctx) {
-    // Радуга
-    static uint8_t current_index = 0;
 
-    exit_timer(ctx.cfg_modes.rainbow.delay_ms);
-
-    for (int segment_id = 0; segment_id < 8; ++segment_id) {
-        uint8_t hue = current_index + ctx.cfg_modes.rainbow.hue_offset * segment_id;
-        write_color_to_segment(segment_id,ctx,CHSV(hue,255,255));
-    }
-    current_index++;
-}
 
 void blink_mode(App &ctx) {
     static bool is_white = true;
@@ -297,6 +344,12 @@ void show_color_modes(App &ctx) {
             }
             break;
 
+        case RAINBOW2_MODE:
+            rainbow2_mode(ctx);
+            break;
+        case RAINBOW3_MODE:
+            rainbow3_mode(ctx);
+            break;
     }
     FastLED.show();
 }
