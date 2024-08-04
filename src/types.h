@@ -16,15 +16,17 @@
 #define FILL_WHITE_MODE_COUNT_WAIT      100
 
 #define TO_CENTER_MODE_DEF_DELAY_MS     750
-#define TO_CENTER_MODE_MAX_DELAY_MS     10000
 #define TO_CENTER_MODE_MIN_DELAY_MS     100
+#define TO_CENTER_MODE_MAX_DELAY_MS     10000
+
+#define FADE_MODE_DEF_DELAY_MS          10
+#define FADE_MODE_MIN_DELAY_MS          0
+#define FADE_MODE_MAX_DELAY_MS          100
 
 #define RAINBOW_MODE_DEF_DELAY_MS       30
 #define RAINBOW_MODE_MIN_DELAY_MS       1
 #define RAINBOW_MODE_MAX_DELAY_MS       50
 #define RAINBOW_MODE_HUE_OFFSET         31
-
-#define MODE_3_DELAY_MS 20
 
 #ifndef LENGTH_OF_SMOOTHED_AMPLITUDES
 #define LENGTH_OF_SMOOTHED_AMPLITUDES 16
@@ -54,16 +56,16 @@ struct ColorModesConfigs {
     CreativeModeCfg creative;
     FillWhiteModeCfg fill_white;
     uint16_t move_to_center_delay_ms = TO_CENTER_MODE_DEF_DELAY_MS;
+    uint8_t fade_mode_delay_ms = FADE_MODE_DEF_DELAY_MS;
     RainbowModeCfg rainbow;
-    uint16_t mode_3_delay_ms = TO_CENTER_MODE_DEF_DELAY_MS;
     uint8_t color_music_delay_ms = 10;
 };
 
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE,
-    MOVE_TO_CENTER_MODE,
-//    MODE_4, MODE_5, MODE_6
-    MODE_3, COLOR_MUSIC, RAINBOW_MODE
+    MOVE_TO_CENTER_MODE, FADE_MODE,
+    COLOR_MUSIC,
+    RAINBOW_MODE
 };
 
 struct Segment {

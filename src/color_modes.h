@@ -44,20 +44,25 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
                 TO_CENTER_MODE_MAX_DELAY_MS
             );
             break;
-        case MODE_3:
+        case FADE_MODE:
+            ctx.cfg_modes.fade_mode_delay_ms = constrain(
+                    int(ctx.cfg_modes.fade_mode_delay_ms) + offset,
+                    FADE_MODE_MIN_DELAY_MS,
+                    FADE_MODE_MAX_DELAY_MS
+            );
+//            Serial.print("FADE DELAY: ");
+//            Serial.println(ctx.cfg_modes.fade_mode_delay_ms);
+            break;
+        case RAINBOW_MODE:
+            ctx.cfg_modes.rainbow.delay_ms = constrain(
+                    int(ctx.cfg_modes.rainbow.delay_ms) + offset,
+                    RAINBOW_MODE_MIN_DELAY_MS,
+                    RAINBOW_MODE_MAX_DELAY_MS
+            );
             break;
         case COLOR_MUSIC:
             if (offset > 0) ctx.analyzer.need_calibration = true;
             break;
-        case RAINBOW_MODE:
-            ctx.cfg_modes.rainbow.delay_ms = constrain(
-                int(ctx.cfg_modes.rainbow.delay_ms) + offset,
-                RAINBOW_MODE_MIN_DELAY_MS,
-                RAINBOW_MODE_MAX_DELAY_MS
-            );
-            break;
-
-
     }
 }
 
@@ -139,6 +144,20 @@ void move_to_center_mode(App &ctx) {
     if (fullness < 8) return;
     fullness = 0;
     is_fill = not is_fill;
+}
+
+void fade_mode(App &ctx) {
+
+    static uint8_t bright = 254;
+    static bool is_fade = false;
+
+    exit_timer(ctx.cfg_modes.fade_mode_delay_ms);
+
+    bright += is_fade ? - 1 : 1;
+    if (bright < 1) is_fade = false;
+    if (bright > 254) is_fade = true;
+
+    fill_leds(ctx, CRGB(bright, bright, bright));
 }
 
 #define LOW_START_AMPLITUDE_INDEX 1
@@ -233,52 +252,6 @@ void color_music(App &ctx) {
 
 }
 
-void mode_3(App &ctx) {
-
-    exit_timer(ctx.cfg_modes.mode_3_delay_ms);
-
-    write_color_to_segment(0, ctx, CRGB(
-            255,
-            0,
-            0
-    ));
-    write_color_to_segment(1, ctx, CRGB(
-            0,
-            255,
-            0
-    ));
-    write_color_to_segment(2, ctx, CRGB(
-            0,
-            0,
-            255
-    ));
-    write_color_to_segment(3, ctx, CRGB(
-            255,
-            0,
-            0
-    ));
-    write_color_to_segment(4, ctx, CRGB(
-            0,
-            255,
-            0
-    ));
-    write_color_to_segment(5, ctx, CRGB(
-            0,
-            0,
-            255
-    ));
-    write_color_to_segment(6, ctx, CRGB(
-            255,
-            0,
-            0
-    ));
-    write_color_to_segment(7, ctx, CRGB(
-            0,
-            255,
-            0
-    ));
-}
-
 void rainbow_mode(App &ctx) {
     // Радуга
     static uint8_t current_index = 0;
@@ -299,6 +272,33 @@ void blink_mode(App &ctx) {
 
     fill_leds(ctx, is_white? CRGB::White : CRGB::Black);
     is_white = not is_white;
+}
+
+void show_color_modes(App &ctx) {
+    switch (ctx.mode) {
+        case WHITE_MODE:            white_mode(ctx);            break;
+        case CREATIVE_MODE:         creative_mode(ctx);         break;
+        case FILL_WHITE_MODE:       fill_white_mode(ctx);       break;
+        case MOVE_TO_CENTER_MODE:   move_to_center_mode(ctx);   break;
+        case FADE_MODE:             fade_mode(ctx);             break;
+        case RAINBOW_MODE:          rainbow_mode(ctx);          break;
+        case COLOR_MUSIC:
+            if (ctx.analyzer.need_calibration) {
+                calibrate_audio_analyzer(ctx.analyzer);
+                if (ctx.analyzer.need_calibration) {
+                    blink_mode(ctx);
+                } else {
+                    fill_leds(ctx, CRGB::Black);
+                }
+            } else {
+                readSamples(ctx.analyzer);
+                fht_process(ctx.analyzer);
+                color_music(ctx);
+            }
+            break;
+
+    }
+    FastLED.show();
 }
 
 #endif //ARD_COLOR_MODES_H

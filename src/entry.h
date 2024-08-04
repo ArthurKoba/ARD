@@ -22,12 +22,12 @@ void main_setup() {
     Serial.begin(115200);
 //     EEPROM.begin(1024);
     //    read_eeprom();
-    init_audio_analyzer(context.analyzer);
-    init_buttons();
     CFastLED::addLeds<LED_TYPE, STRIP_PIN, COLOR_ORDER>(context.leds, NUM_LEDS);
     FastLED.setCorrection(TypicalLEDStrip);
     init_segments(context);
-    set_mode(context, MOVE_TO_CENTER_MODE);
+    init_audio_analyzer(context.analyzer);
+    init_buttons();
+    set_mode(context, FADE_MODE);
 }
 
 void main_loop() {
@@ -38,47 +38,7 @@ void main_loop() {
 //    Serial.println(int(analogRead(AUDIO_PIN)));
 //    return;
     check_buttons(context);
-    switch (context.mode) {
-        case WHITE_MODE:
-            white_mode(context);
-            break;
-        case CREATIVE_MODE:
-            creative_mode(context);
-            break;
-        case FILL_WHITE_MODE:
-            fill_white_mode(context);
-            break;
-        case MOVE_TO_CENTER_MODE:
-            move_to_center_mode(context);
-            break;
-        case MODE_3:
-            mode_3(context);
-            break;
-//        case MODE_4:
-//            break;
-//        case MODE_5:
-//            break;
-//        case MODE_6:
-//            break;
-        case COLOR_MUSIC:
-            if (context.analyzer.need_calibration) {
-                calibrate_audio_analyzer(context.analyzer);
-                if (context.analyzer.need_calibration) {
-                    blink_mode(context);
-                } else {
-                    fill_leds(context, CRGB::Black);
-                }
-            } else {
-                readSamples(context.analyzer);
-                fht_process(context.analyzer);
-                color_music(context);
-            }
-            break;
-        case RAINBOW_MODE:
-            rainbow_mode(context);
-            break;
-    }
-    FastLED.show();
+    show_color_modes(context);
 }
 
 #endif //ARD_ENTRY_H
