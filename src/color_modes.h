@@ -157,12 +157,19 @@ void fill_white_mode(App &ctx) {
 
 void move_to_center_mode(App &ctx) {
 
-    static uint16_t fullness = 0;
+    static uint8_t fullness = 0;
     static bool is_fill = true;
 
     exit_timer(ctx.cfg_modes.move_to_center_delay_ms);
 
-    write_color_to_segment(fullness++, ctx, is_fill ? CRGB::White : CRGB::Black);
+    fullness++;
+    for (uint8_t i = 0; i < fullness; ++i) {
+        write_color_to_segment(i, ctx, is_fill ? CRGB::White : CRGB::Black);
+    }
+
+    for (uint8_t i = fullness; i < 8; ++i) {
+        write_color_to_segment(i, ctx, is_fill ? CRGB::Black : CRGB::White);
+    }
 
     if (fullness < 8) return;
     fullness = 0;
