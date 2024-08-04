@@ -14,10 +14,10 @@ void set_mode(App &ctx, ColorMode mode) {
 void exec_increase_or_decrease(App &ctx, int8_t offset) {
     switch (ctx.mode) {
         case WHITE_MODE:
-            ctx.cfg_modes.white.bright = constrain(
-                    int(ctx.cfg_modes.white.bright) + offset * 10,
-                    MIN_BRIGHT_WHITE_MODE,
-                    MAX_BRIGHT_WHITE_MODE
+            ctx.cfg_modes.white_mode_bright = constrain(
+                int(ctx.cfg_modes.white_mode_bright) + offset * 10,
+                WHITE_MODE_MIN_BRIGHT,
+                WHITE_MODE_MAX_BRIGHT
             );
             break;
         case CREATIVE_MODE:
@@ -29,42 +29,47 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
             } else if (offset < 0) {
                 ctx.cfg_modes.creative.segment_hues[ctx.cfg_modes.creative.current_segment] += 10;
             }
-
             break;
         case FILL_WHITE_MODE:
             ctx.cfg_modes.fill_white.delay_ms = constrain(
-            int(ctx.cfg_modes.fill_white.delay_ms) + offset,
-            FILL_WHITE_MODE_MIN_DELAY_MS,
-            FILL_WHITE_MODE_MAX_DELAY_MS
+                int(ctx.cfg_modes.fill_white.delay_ms) + offset,
+                FILL_WHITE_MODE_MIN_DELAY_MS,
+                FILL_WHITE_MODE_MAX_DELAY_MS
+            );
+            break;
+        case MOVE_TO_CENTER_MODE:
+            ctx.cfg_modes.move_to_center_delay_ms = constrain(
+                int(ctx.cfg_modes.move_to_center_delay_ms) + offset * 100,
+                TO_CENTER_MODE_MIN_DELAY_MS,
+                TO_CENTER_MODE_MAX_DELAY_MS
             );
             break;
         case MODE_3:
             break;
-        case RAINBOW_MODE:
-            ctx.cfg_modes.rainbow.delay_ms = constrain(
-                    int(ctx.cfg_modes.rainbow.delay_ms) + offset,
-                    RAINBOW_MODE_MIN_DELAY_MS,
-                    RAINBOW_MODE_MAX_DELAY_MS
-            );
-            break;
         case COLOR_MUSIC:
             if (offset > 0) ctx.analyzer.need_calibration = true;
             break;
+        case RAINBOW_MODE:
+            ctx.cfg_modes.rainbow.delay_ms = constrain(
+                int(ctx.cfg_modes.rainbow.delay_ms) + offset,
+                RAINBOW_MODE_MIN_DELAY_MS,
+                RAINBOW_MODE_MAX_DELAY_MS
+            );
+            break;
+
+
     }
 }
 
-void increase_mode(App &ctx) {
-    ctx.mode = static_cast<ColorMode>(static_cast<uint8_t>(ctx.mode) + 1);
-    if (ctx.mode > RAINBOW_MODE) ctx.mode = WHITE_MODE;
-}
+
 
 void white_mode(App &ctx) {
-    exit_timer(ctx.cfg_modes.white.delay_ms);
+    exit_timer(WHITE_MODE_DEF_DELAY_MS);
 
     fill_leds(ctx, CRGB(
-            ctx.cfg_modes.white.bright,
-            ctx.cfg_modes.white.bright,
-            ctx.cfg_modes.white.bright
+        ctx.cfg_modes.white_mode_bright,
+        ctx.cfg_modes.white_mode_bright,
+        ctx.cfg_modes.white_mode_bright
     ));
 }
 
@@ -72,7 +77,7 @@ void creative_mode(App &ctx) {
     // 7 сегментов меняют цвет, 255 оттенков, кроме последнего сегмента 8-го, состоящего из центральной точки.
     // Она всегда горит белым цветом, у неё просто меняется яркость если пытаешься менять цвет в этом режиме.
 
-    exit_timer(ctx.cfg_modes.creative.delay_ms);
+    exit_timer(CREATIVE_MODE_DEF_DELAY_MS);
 
     for (int i = 0; i < 7; ++i) {
         write_color_to_segment(i, ctx, CHSV(
@@ -122,7 +127,19 @@ void fill_white_mode(App &ctx) {
     }
 }
 
+void move_to_center_mode(App &ctx) {
 
+    static uint16_t fullness = 0;
+    static bool is_fill = true;
+
+    exit_timer(ctx.cfg_modes.move_to_center_delay_ms);
+
+    write_color_to_segment(fullness++, ctx, is_fill ? CRGB::White : CRGB::Black);
+
+    if (fullness < 8) return;
+    fullness = 0;
+    is_fill = not is_fill;
+}
 
 #define LOW_START_AMPLITUDE_INDEX 1
 #define LOW_END_AMPLITUDE_INDEX 1

@@ -27,7 +27,7 @@ void main_setup() {
     CFastLED::addLeds<LED_TYPE, STRIP_PIN, COLOR_ORDER>(context.leds, NUM_LEDS);
     FastLED.setCorrection(TypicalLEDStrip);
     init_segments(context);
-    set_mode(context, COLOR_MUSIC);
+    set_mode(context, MOVE_TO_CENTER_MODE);
 }
 
 void main_loop() {
@@ -37,9 +37,7 @@ void main_loop() {
 //    Serial.print(',');
 //    Serial.println(int(analogRead(AUDIO_PIN)));
 //    return;
-#if not defined(KOBA_CONF)
     check_buttons(context);
-#endif
     switch (context.mode) {
         case WHITE_MODE:
             white_mode(context);
@@ -49,6 +47,9 @@ void main_loop() {
             break;
         case FILL_WHITE_MODE:
             fill_white_mode(context);
+            break;
+        case MOVE_TO_CENTER_MODE:
+            move_to_center_mode(context);
             break;
         case MODE_3:
             mode_3(context);
@@ -76,7 +77,6 @@ void main_loop() {
         case RAINBOW_MODE:
             rainbow_mode(context);
             break;
-
     }
     FastLED.show();
 }

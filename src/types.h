@@ -4,21 +4,25 @@
 #include "config.h"
 #include "stdint.h"
 
-#define WHITE_MODE_DELTA_MS 10
-#define MIN_BRIGHT_WHITE_MODE 10
-#define MAX_BRIGHT_WHITE_MODE 255
+#define WHITE_MODE_DEF_DELAY_MS         100
+#define WHITE_MODE_MIN_BRIGHT           10
+#define WHITE_MODE_MAX_BRIGHT           255
 
-#define CREATIVE_MODE_DELTA_MS 30
+#define CREATIVE_MODE_DEF_DELAY_MS      30
 
-#define FILL_WHITE_MODE_DELAY_MS        20
-#define FILL_WHITE_MODE_COUNT_WAIT      100
+#define FILL_WHITE_MODE_DEF_DELAY_MS    20
 #define FILL_WHITE_MODE_MIN_DELAY_MS    1
 #define FILL_WHITE_MODE_MAX_DELAY_MS    50
+#define FILL_WHITE_MODE_COUNT_WAIT      100
 
-#define RAINBOW_MODE_DEFAULT_DELAY_MS 30
-#define RAINBOW_MODE_MIN_DELAY_MS 1
-#define RAINBOW_MODE_MAX_DELAY_MS 50
-#define RAINBOW_MODE_HUE_OFFSET 31
+#define TO_CENTER_MODE_DEF_DELAY_MS     750
+#define TO_CENTER_MODE_MAX_DELAY_MS     10000
+#define TO_CENTER_MODE_MIN_DELAY_MS     100
+
+#define RAINBOW_MODE_DEF_DELAY_MS       30
+#define RAINBOW_MODE_MIN_DELAY_MS       1
+#define RAINBOW_MODE_MAX_DELAY_MS       50
+#define RAINBOW_MODE_HUE_OFFSET         31
 
 #define MODE_3_DELAY_MS 20
 
@@ -30,38 +34,34 @@
 #define LENGTH_COLOR_AMPLITUDES 16
 #endif
 
-struct WhiteModeCfg {
-    uint8_t bright = MAX_BRIGHT_WHITE_MODE;
-    uint8_t delay_ms = WHITE_MODE_DELTA_MS;
-};
-
 struct CreativeModeCfg {
-    uint8_t delay_ms = CREATIVE_MODE_DELTA_MS;
-    uint8_t current_segment = 7;
+    uint8_t current_segment = 0;
     uint8_t segment_hues[8];
 };
 
 struct RainbowModeCfg {
-    uint8_t delay_ms = RAINBOW_MODE_DEFAULT_DELAY_MS;
+    uint8_t delay_ms = RAINBOW_MODE_DEF_DELAY_MS;
     uint8_t hue_offset = RAINBOW_MODE_HUE_OFFSET;
 };
 
 struct FillWhiteModeCfg {
-    uint8_t delay_ms = FILL_WHITE_MODE_DELAY_MS;
+    uint8_t delay_ms = FILL_WHITE_MODE_DEF_DELAY_MS;
     uint8_t count_wait = FILL_WHITE_MODE_COUNT_WAIT;
 };
 
 struct ColorModesConfigs {
-    WhiteModeCfg white;
+    uint8_t white_mode_bright = WHITE_MODE_MAX_BRIGHT;
     CreativeModeCfg creative;
     FillWhiteModeCfg fill_white;
+    uint16_t move_to_center_delay_ms = TO_CENTER_MODE_DEF_DELAY_MS;
     RainbowModeCfg rainbow;
-    uint8_t mode_3_delay_ms = MODE_3_DELAY_MS;
+    uint16_t mode_3_delay_ms = TO_CENTER_MODE_DEF_DELAY_MS;
     uint8_t color_music_delay_ms = 10;
 };
 
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE,
+    MOVE_TO_CENTER_MODE,
 //    MODE_4, MODE_5, MODE_6
     MODE_3, COLOR_MUSIC, RAINBOW_MODE
 };

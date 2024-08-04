@@ -6,6 +6,11 @@
 #include "stdint.h"
 #include "types.h"
 
+void increase_mode(App &ctx) {
+    ctx.mode = static_cast<ColorMode>(static_cast<uint8_t>(ctx.mode) + 1);
+    if (ctx.mode > RAINBOW_MODE) ctx.mode = WHITE_MODE;
+}
+
 void fill_leds(App &ctx, CRGB color, uint16_t start_led = 0, uint16_t end_led = NUM_LEDS) {
     for (uint16_t i = start_led; i < end_led; ++i) {
         ctx.leds[i] = color;
