@@ -85,6 +85,8 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
             if (offset > 0) ctx.analyzer.need_calibration = true;
             break;
     }
+    if (ctx.cfg_modes.current_mode == COLOR_MUSIC) return;
+    ctx.need_update_saves = true;
 }
 
 

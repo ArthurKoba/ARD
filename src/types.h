@@ -212,6 +212,8 @@ struct App {
     CRGB leds[NUM_LEDS];
     Segment segments[8];
     AnalyzerConfigs analyzer;
+    int firmware_hash_address = 0;
+    bool need_update_saves = false;
 };
 
 #endif //ARD_TYPES_H

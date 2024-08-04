@@ -20,6 +20,7 @@
 void increase_mode(App &ctx) {
     ctx.cfg_modes.current_mode = static_cast<ColorMode>(static_cast<uint8_t>(ctx.cfg_modes.current_mode) + 1);
     if (ctx.cfg_modes.current_mode > COLOR_MUSIC) ctx.cfg_modes.current_mode = WHITE_MODE;
+    ctx.need_update_saves = true;
 }
 
 void fill_leds(App &ctx, CRGB color, uint16_t start_led = 0, uint16_t end_led = NUM_LEDS) {
