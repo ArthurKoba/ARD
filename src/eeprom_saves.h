@@ -25,6 +25,7 @@ void init_eeprom(App &ctx) {
     String start_datetime = String(__TIMESTAMP__);
     Serial.print(F("Date of firmware: "));
     Serial.println(start_datetime);
+    Serial.println();
 
     uint8_t hash = 0;
     for (size_t i = 0; i < start_datetime.length(); ++i) {

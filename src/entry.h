@@ -17,6 +17,7 @@ App context;
 
 void main_setup() {
     Serial.begin(SERIAL_SPEED);
+    Serial.println(F("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
     CFastLED::addLeds<LED_TYPE, STRIP_PIN, LED_COLOR_ORDER>(context.leds, NUM_LEDS);
     FastLED.setCorrection(TypicalLEDStrip);
     init_segments(context);

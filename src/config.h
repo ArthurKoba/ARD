@@ -96,7 +96,7 @@
 
 #else
 
-#define DEFAULT_SAMPLE_OFFSET 511
+#define DEFAULT_SAMPLE_OFFSET 508
 #define SILENCE_AMPLITUDE_LEVEL 30
 #define AUDIO_PIN 16 // Пин аудио-сигнала (микрофона). Для Nano: A0 - 14; A1 - 15, ..., A7 - 21.
 #define STRIP_PIN 4
@@ -151,7 +151,6 @@
 #if not defined(STRIP_PIN)
 #error STRIP_PIN not defined!!!
 #endif
-
 
 #if not defined(LED_TYPE)
 #error LED_TYPE not defined!!!

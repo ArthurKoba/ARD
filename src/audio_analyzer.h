@@ -70,7 +70,9 @@ void calibrate_audio_analyzer(AnalyzerConfigs &cfg) {
     readSamples(cfg);
     cfg.time_of_last_signal = 0;
     if (cfg.signal_amplitude > SILENCE_AMPLITUDE_LEVEL) {
-        Serial.println("HIGH INPUT AUDIO LEVEL. NEED SILENCE FOR CALIBRATION");
+        Serial.print(F("High amplitude input audio signal: "));
+        Serial.print(cfg.signal_amplitude);
+        Serial.println(F(". Need silence for calibration!"));
     } else if (abs(cfg.signal_median_amplitude) > 20) {
         cfg.sample_offset += cfg.signal_median_amplitude >> 1;
     } else if (cfg.signal_median_amplitude > 0) {
@@ -79,6 +81,7 @@ void calibrate_audio_analyzer(AnalyzerConfigs &cfg) {
         cfg.sample_offset -= 1;
     } else {
        cfg.need_calibration = false;
+       Serial.print(F("Calibration successful!"));
        Serial.print(F("Sampling Freq: "));
        Serial.println(cfg.sampling_frequency);
        Serial.print(F("Samples offset: "));
