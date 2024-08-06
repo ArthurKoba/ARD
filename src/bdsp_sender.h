@@ -13,12 +13,12 @@ void init_bdsp(BDSPTransmitter &transmitter) {
     }, nullptr);
 }
 
-void send_samples(App &ctx) {
+void send_samples(Context &ctx) {
 
     ctx.transmitter.send_data(1, reinterpret_cast<uint8_t*>(ctx.analyzer.samples), FHT_N * 2);
 }
 
-void send_amplitudes(App &ctx) {
+void send_amplitudes(Context &ctx) {
     ctx.transmitter.send_data(2, ctx.analyzer.amplitudes, FHT_N / 2);
 }
 

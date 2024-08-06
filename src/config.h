@@ -1,8 +1,6 @@
 #ifndef ARD_CONFIG_H
 #define ARD_CONFIG_H
 
-#include <Arduino.h>
-
 #define BUTTONS_DELAY_MS 200 // Задержка между действиями кнопок.
 
 #define WHITE_MODE_DEF_DELAY_MS 100
@@ -163,5 +161,7 @@
 #if not defined(LED_COLOR_ORDER)
 #error LED_COLOR_ORDER not defined!!!
 #endif
+
+#include "default_defs.h"
 
 #endif //ARD_CONFIG_H

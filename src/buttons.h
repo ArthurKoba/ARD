@@ -22,7 +22,7 @@ void init_buttons() {
 #endif
 }
 
-void check_change_mode_button(App &ctx) {
+void check_change_mode_button(Context &ctx) {
     static bool is_wait_release = false;
     exit_timer(BUTTONS_DELAY_MS);
     bool is_pressed = digitalRead(CHANGE_MODE_PIN);
@@ -37,7 +37,7 @@ void check_change_mode_button(App &ctx) {
     }
 }
 
-void check_increase_button(App &ctx) {
+void check_increase_button(Context &ctx) {
     exit_timer(BUTTONS_DELAY_MS);
     bool is_pressed = digitalRead(INCREASE_PIN);
 #if defined(BUTTONS_REVERSE_LEVELS)
@@ -47,7 +47,7 @@ void check_increase_button(App &ctx) {
     exec_increase_or_decrease(ctx, 1);
 }
 
-void check_decrease_button(App &ctx) {
+void check_decrease_button(Context &ctx) {
     exit_timer(BUTTONS_DELAY_MS);
     bool is_pressed = digitalRead(DECREASE_PIN);
 #if defined(BUTTONS_REVERSE_LEVELS)
@@ -57,7 +57,7 @@ void check_decrease_button(App &ctx) {
     exec_increase_or_decrease(ctx, -1);
 }
 
-void check_buttons(App &ctx) {
+void check_buttons(Context &ctx) {
     check_change_mode_button(ctx);
     check_increase_button(ctx);
     check_decrease_button(ctx);

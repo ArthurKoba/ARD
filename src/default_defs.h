@@ -148,5 +148,12 @@
 #define LOG_OUT 1 // Тип амплитуд преобразования Хартли.
 #define FHT_N 256 // Количество измерений сигнала для преобразования Хартли.
 
+#if not defined(SILENCE_AMPLITUDE_LEVEL)
+#error SILENCE_AMPLITUDE_LEVEL not defined!
+#endif
+
+#if not defined(AUDIO_PIN)
+#error AUDIO_PIN not defined!!!
+#endif
 
 #endif //ARD_DEFAULT_DEFS_H

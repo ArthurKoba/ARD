@@ -1,13 +1,15 @@
 #if defined(PLATFORMIO_ENV)
 
-#include "entry.h"
+#include "app.h"
+
+Application app;
 
 void setup() {
-    main_setup();
+    app.init();
 }
 
 void loop() {
-    main_loop();
+    app.loop();
 }
 
 #endif

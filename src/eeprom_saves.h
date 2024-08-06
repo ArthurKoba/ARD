@@ -11,7 +11,7 @@
 #define EEPROM_DELAY_CHECK_NEED_UPDATE_SAVES_MS 10000
 #endif
 
-void check_need_update_saves(App &ctx) {
+void check_need_update_saves(Context &ctx) {
     exit_timer(EEPROM_DELAY_CHECK_NEED_UPDATE_SAVES_MS);
 
     if (not ctx.need_update_saves) return;
@@ -21,7 +21,7 @@ void check_need_update_saves(App &ctx) {
     Serial.println(F("The settings have been updated successfully."));
 }
 
-void init_eeprom(App &ctx) {
+void init_eeprom(Context &ctx) {
     String start_datetime = String(__TIMESTAMP__);
     Serial.print(F("Date of firmware: "));
     Serial.println(start_datetime);

@@ -8,11 +8,11 @@
 #include "bdsp_sender.h"
 
 
-void set_mode(App &ctx, ColorMode mode) {
+void set_mode(Context &ctx, ColorMode mode) {
     ctx.cfg_modes.current_mode = mode;
 }
 
-void exec_increase_or_decrease(App &ctx, int8_t offset) {
+void exec_increase_or_decrease(Context &ctx, int8_t offset) {
     switch (ctx.cfg_modes.current_mode) {
         case WHITE_MODE:
             ctx.cfg_modes.white_mode_bright = constrain(
@@ -92,7 +92,7 @@ void exec_increase_or_decrease(App &ctx, int8_t offset) {
 
 
 
-void white_mode(App &ctx) {
+void white_mode(Context &ctx) {
     exit_timer(WHITE_MODE_DEF_DELAY_MS);
 
     fill_leds(ctx, CRGB(
@@ -102,7 +102,7 @@ void white_mode(App &ctx) {
     ));
 }
 
-void creative_mode(App &ctx) {
+void creative_mode(Context &ctx) {
     // 7 сегментов меняют цвет, 255 оттенков, кроме последнего сегмента 8-го, состоящего из центральной точки.
     // Она всегда горит белым цветом, у неё просто меняется яркость если пытаешься менять цвет в этом режиме.
 
@@ -123,7 +123,7 @@ void creative_mode(App &ctx) {
 
 }
 
-void fill_white_mode(App &ctx) {
+void fill_white_mode(Context &ctx) {
     //  Поочередно зажигаются диоды начиная от внешнего периметра к центральной точке.
     //  Потом немого поработали включенными все диоды, затухают и цикл начинается заново.
     //  Кнопками меняется скорость работы режима + -.
@@ -156,7 +156,7 @@ void fill_white_mode(App &ctx) {
     }
 }
 
-void move_to_center_mode(App &ctx) {
+void move_to_center_mode(Context &ctx) {
 
     static uint8_t fullness = 0;
     static bool is_fill = true;
@@ -177,7 +177,7 @@ void move_to_center_mode(App &ctx) {
     is_fill = not is_fill;
 }
 
-void fade_mode(App &ctx) {
+void fade_mode(Context &ctx) {
 
     static uint8_t bright = 254;
     static bool is_fade = false;
@@ -191,7 +191,7 @@ void fade_mode(App &ctx) {
     fill_leds(ctx, CRGB(bright, bright, bright));
 }
 
-void rainbow_mode(App &ctx) {
+void rainbow_mode(Context &ctx) {
     // Радуга
     static uint8_t current_index = 0;
 
@@ -204,7 +204,7 @@ void rainbow_mode(App &ctx) {
     current_index++;
 }
 
-void rainbow2_mode(App &ctx) {
+void rainbow2_mode(Context &ctx) {
     // Радуга
     static uint8_t current_index = 0;
 
@@ -216,7 +216,7 @@ void rainbow2_mode(App &ctx) {
     current_index++;
 }
 
-void rainbow3_mode(App &ctx) {
+void rainbow3_mode(Context &ctx) {
     // Радуга
     static uint8_t current_index = 0;
     static uint8_t current_index_inverse = 127;
@@ -235,7 +235,7 @@ void rainbow3_mode(App &ctx) {
     current_index_inverse--;
 }
 
-void fire_mode(App &ctx) {
+void fire_mode(Context &ctx) {
 
     static uint16_t counter = 0;
 
@@ -264,7 +264,7 @@ void fire_mode(App &ctx) {
 #define HIGH_END_AMPLITUDE_INDEX 127
 #define HIGH_MULTIPLICATION_AMPLITUDE 0.7
 
-void color_music(App &ctx) {
+void color_music(Context &ctx) {
 
     exit_timer(ctx.cfg_modes.color_music_delay_ms);
 
@@ -346,7 +346,7 @@ void color_music(App &ctx) {
 
 
 
-void blink_mode(App &ctx) {
+void blink_mode(Context &ctx) {
     static bool is_white = true;
 
     exit_timer(200);
@@ -355,7 +355,7 @@ void blink_mode(App &ctx) {
     is_white = not is_white;
 }
 
-void show_color_modes(App &ctx) {
+void show_color_modes(Context &ctx) {
     switch (ctx.cfg_modes.current_mode) {
         case WHITE_MODE:            white_mode(ctx);            break;
         case CREATIVE_MODE:         creative_mode(ctx);         break;

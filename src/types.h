@@ -65,7 +65,7 @@ struct AnalyzerConfigs {
     bool need_calibration = true;
 };
 
-struct App {
+struct Context {
     ColorModesConfigs cfg_modes;
     CRGB leds[NUM_LEDS];
     Segment segments[8];

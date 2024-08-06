@@ -17,19 +17,19 @@
 #error There is an error when declaring sectors
 #endif                                                                                                                             \
 
-void increase_mode(App &ctx) {
+void increase_mode(Context &ctx) {
     ctx.cfg_modes.current_mode = static_cast<ColorMode>(static_cast<uint8_t>(ctx.cfg_modes.current_mode) + 1);
     if (ctx.cfg_modes.current_mode > COLOR_MUSIC) ctx.cfg_modes.current_mode = WHITE_MODE;
     ctx.need_update_saves = true;
 }
 
-void fill_leds(App &ctx, CRGB color, uint16_t start_led = 0, uint16_t end_led = NUM_LEDS) {
+void fill_leds(Context &ctx, CRGB color, uint16_t start_led = 0, uint16_t end_led = NUM_LEDS) {
     for (uint16_t i = start_led; i < end_led; ++i) {
         ctx.leds[i] = color;
     }
 }
 
-void init_default_colors_for_creative_mode(App &ctx) {
+void init_default_colors_for_creative_mode(Context &ctx) {
     ctx.cfg_modes.creative.segment_hues[0] = 42 * 0;
     ctx.cfg_modes.creative.segment_hues[1] = 42 * 2;
     ctx.cfg_modes.creative.segment_hues[2] = 42 * 4;
@@ -40,7 +40,7 @@ void init_default_colors_for_creative_mode(App &ctx) {
     ctx.cfg_modes.creative.segment_hues[7] = 255;
 }
 
-void init_segments(App &ctx) {
+void init_segments(Context &ctx) {
     ctx.segments[0] = {SECTOR_1_START, SECTOR_1_END};
     ctx.segments[1] = {SECTOR_2_START, SECTOR_2_END};
     ctx.segments[2] = {SECTOR_3_START, SECTOR_3_END};
@@ -51,7 +51,7 @@ void init_segments(App &ctx) {
     ctx.segments[7] = {SECTOR_8_START, SECTOR_8_END};
 }
 
-void write_color_to_segment(uint8_t segment, App &ctx, CRGB color) {
+void write_color_to_segment(uint8_t segment, Context &ctx, CRGB color) {
     if (segment > 7) return;
     for (uint16_t i = ctx.segments[segment].start; i < ctx.segments[segment].end + 1; ++i) {
         ctx.leds[i] = color;

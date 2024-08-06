@@ -6,15 +6,6 @@
 #include <FHT.h>
 #include "types.h"
 
-#if not defined(SILENCE_AMPLITUDE_LEVEL)
-#error SILENCE_AMPLITUDE_LEVEL not defined!
-#endif
-
-#if not defined(AUDIO_PIN)
-#error AUDIO_PIN not defined!!!
-#endif
-
-
 void put_amplitude_to_history(uint8_t value, AmplitudeHistory &history) {
     history.minimum = value;
     history.maximum = value;
