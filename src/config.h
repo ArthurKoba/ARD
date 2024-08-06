@@ -49,7 +49,7 @@
 #define FIRE_MODE_MIN_SAT 245     // максимальная насыщенность
 #define FIRE_MODE_MAX_SAT 255     // максимальная насыщенность
 
-#define COLOR_MUSIC_DEF_DELAY_MS 10
+#define COLOR_MUSIC_DEF_DELAY_MS 5
 
 #if not defined(KOBA_CONF)
 #define SERIAL_SPEED 115200 // Скорость последовательного порта
@@ -57,7 +57,7 @@
 #define AUDIO_PIN 54 //  Пин аудио-сигнала (микрофона). Для меги: A0 - 54; A1 - 55, ..., A15 - 69. В общем смотрим pinout платы.
 #define GAIN_MIC_PIN 55 // A1
 #define AR_MIC_PIN 56 // A2
-#define SILENCE_AMPLITUDE_LEVEL 50 // Верхний порог амплитуды сигнала во время тишины. Необходимо для калибровки анализатора частот.
+#define SILENCE_AMPLITUDE_LEVEL 70 // Верхний порог амплитуды сигнала во время тишины. Необходимо для калибровки анализатора частот.
 #define DEFAULT_SAMPLE_OFFSET 500
 
 #define STRIP_PIN 2 // Пин к которому подключена адресная лента (Вывод Data)
