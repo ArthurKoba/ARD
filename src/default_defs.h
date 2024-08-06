@@ -145,7 +145,14 @@
 #error NUM_LEDS not defined!
 #endif
 
+#define FFT_MODE 1
+
+#if (FFT_MODE == 0)
 #define LOG_OUT 1 // Тип амплитуд преобразования Хартли.
+#elif (FFT_MODE == 1)
+#define LIN_OUT 1
+#endif
+
 #define FHT_N 256 // Количество измерений сигнала для преобразования Хартли.
 
 #if not defined(SILENCE_AMPLITUDE_LEVEL)

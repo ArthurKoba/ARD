@@ -25,7 +25,18 @@ void fht_process(AnalyzerConfigs &cfg) {
     fht_window();
     fht_reorder();
     fht_run();
+
+#if (LOG_OUT == 1)
     fht_mag_log();
+    for (int i = 0; i < FHT_N / 2; ++i) {
+        cfg.amplitudes[i] <<= 1;
+    }
+#elif (LIN_OUT == 1)
+    fht_mag_lin();
+    for (int i = 0; i < FHT_N / 2; ++i) {
+        cfg.amplitudes[i] = constrain(fht_lin_out[i] << 2, 0, 255);
+    }
+#endif
     for (uint8_t i = 0; i < LENGTH_OF_SMOOTHED_AMPLITUDES; i++ ) {
         cfg.amplitudes[i] = (cfg.amplitudes[i] + cfg.smoothing_amplitudes[i]) >> 1;
         cfg.smoothing_amplitudes[i] = cfg.amplitudes[i];
@@ -98,7 +109,11 @@ void init_audio_analyzer(AnalyzerConfigs &cfg) {
     TCCR2A = 0b00000011;
 
     cfg.samples = fht_input;
+#if (LOG_OUT == 1)
     cfg.amplitudes = fht_log_out;
+#elif (LIN_OUT == 1)
+    cfg.amplitudes = reinterpret_cast<uint8_t*>(fht_lin_out);
+#endif
 }
 
 #endif //ARD_AUDIO_ANALYZER_H
