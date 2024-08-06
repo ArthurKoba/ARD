@@ -148,6 +148,9 @@
 #error NUM_LEDS not defined!
 #endif
 
+#define LOG_OUT 1 // Тип амплитуд преобразования Хартли.
+#define FHT_N 256 // Количество измерений сигнала для преобразования Хартли.
+
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE, MOVE_TO_CENTER_MODE, FADE_MODE,
     RAINBOW_MODE, RAINBOW2_MODE, RAINBOW3_MODE, FIRE_MODE,

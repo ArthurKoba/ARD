@@ -27,7 +27,9 @@ void main_setup() {
 }
 
 void main_loop() {
-//    send_audio_signal_for_plotter(context);
+//    readSamples(context.analyzer);
+//    send_samples_for_plotter(context.analyzer);
+//    delay(1000);
     check_buttons(context);
     check_need_update_saves(context);
     show_color_modes(context);

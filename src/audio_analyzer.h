@@ -1,9 +1,6 @@
 #ifndef ARD_AUDIO_ANALYZER_H
 #define ARD_AUDIO_ANALYZER_H
 
-#define LOG_OUT 1 // Тип амплитуд преобразования Хартли.
-#define FHT_N 256 // Количество измерений сигнала для преобразования Хартли.
-
 #include "config.h"
 #include <Arduino.h>
 #include <FHT.h>

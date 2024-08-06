@@ -54,10 +54,11 @@
 #define COLOR_MUSIC_DEF_DELAY_MS 10
 
 #if not defined(KOBA_CONF)
-
 #define SERIAL_SPEED 115200 // Скорость последовательного порта
 
 #define AUDIO_PIN 54 //  Пин аудио-сигнала (микрофона). Для меги: A0 - 54; A1 - 55, ..., A15 - 69. В общем смотрим pinout платы.
+#define GAIN_MIC_PIN 55 // A1
+#define AR_MIC_PIN 56 // A2
 #define SILENCE_AMPLITUDE_LEVEL 50 // Верхний порог амплитуды сигнала во время тишины. Необходимо для калибровки анализатора частот.
 #define DEFAULT_SAMPLE_OFFSET 500
 
@@ -93,12 +94,15 @@
 
 #define SECTOR_8_START 375
 #define SECTOR_8_END 376
-
 #else
 
 #define DEFAULT_SAMPLE_OFFSET 508
 #define SILENCE_AMPLITUDE_LEVEL 30
 #define AUDIO_PIN 16 // Пин аудио-сигнала (микрофона). Для Nano: A0 - 14; A1 - 15, ..., A7 - 21.
+
+#define GAIN_MIC_PIN 18 // A4
+#define AR_MIC_PIN 19 // A5
+
 #define STRIP_PIN 4
 #define CHANGE_MODE_PIN 6
 #define DECREASE_PIN 8
