@@ -4,7 +4,7 @@
 #include "config.h"
 #include "default_defs.h"
 #include "stdint.h"
-
+#include "BDSP.h"
 
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE, MOVE_TO_CENTER_MODE, FADE_MODE,
@@ -72,6 +72,7 @@ struct App {
     AnalyzerConfigs analyzer;
     int firmware_hash_address = 0;
     bool need_update_saves = false;
+    BDSPTransmitter transmitter;
 };
 
 #endif //ARD_TYPES_H

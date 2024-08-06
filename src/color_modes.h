@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "pixeltypes.h"
 #include "audio_analyzer.h"
+#include "bdsp_sender.h"
 
 
 void set_mode(App &ctx, ColorMode mode) {
@@ -375,7 +376,9 @@ void show_color_modes(App &ctx) {
                 }
             } else {
                 readSamples(ctx.analyzer);
+                send_samples(ctx);
                 fht_process(ctx.analyzer);
+                send_amplitudes(ctx);
                 color_music(ctx);
             }
             break;

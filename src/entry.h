@@ -11,6 +11,7 @@
 #include "eeprom_saves.h"
 #include "color_modes.h"
 #include "audio_analyzer.h"
+#include "bdsp_sender.h"
 #include "utils.h"
 
 App context;
@@ -24,6 +25,10 @@ void main_setup() {
     init_eeprom(context);
     init_audio_analyzer(context.analyzer);
     init_buttons();
+    init_bdsp(context.transmitter);
+    context.analyzer.sample_offset = 570;
+    context.analyzer.need_calibration = false;
+    set_mode(context, COLOR_MUSIC);
 }
 
 void main_loop() {
