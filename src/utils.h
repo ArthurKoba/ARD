@@ -58,22 +58,6 @@ void write_color_to_segment(uint8_t segment, App &ctx, CRGB color) {
     }
 }
 
-void send_samples_for_plotter(AnalyzerConfigs &analyzer) {
-//    Serial.println(analogRead(AUDIO_PIN));'
-    Serial.print(analyzer.samples[0]);
-    Serial.print(',');
-    Serial.print(512);
-    Serial.print(',');
-    Serial.println(-512);
-    for (int i = 0; i < FHT_N; ++i) {
-        Serial.print(analyzer.samples[i]);
-        Serial.print(',');
-        Serial.print(512);
-        Serial.print(',');
-        Serial.println(-512);
-    }
-}
-
 #define exit_timer(delay_ms) \
     static uint32_t last_update = 0; \
     if (millis() - last_update < (delay_ms)) return; \
