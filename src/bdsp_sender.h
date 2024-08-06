@@ -19,6 +19,7 @@ void send_samples(Context &ctx) {
 }
 
 void send_amplitudes(Context &ctx) {
+    ctx.analyzer.amplitudes[127] = constrain(ctx.analyzer.signal_amplitude, 0, 255);
     ctx.transmitter.send_data(2, ctx.analyzer.amplitudes, FHT_N / 2);
 }
 

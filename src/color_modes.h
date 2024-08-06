@@ -376,8 +376,12 @@ void show_color_modes(Context &ctx) {
                 }
             } else {
                 readSamples(ctx.analyzer);
-                send_samples(ctx);
-                fht_process(ctx.analyzer);
+//                send_samples(ctx);
+                if (ctx.analyzer.signal_amplitude < SILENCE_AMPLITUDE_LEVEL) {
+                    for (int i = 0; i < FHT_N / 2; ++i) ctx.analyzer.amplitudes[i] = 0;
+                } else {
+                    fht_process(ctx.analyzer);
+                }
                 send_amplitudes(ctx);
                 color_music(ctx);
             }

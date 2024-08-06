@@ -38,8 +38,8 @@ void fht_process(AnalyzerConfigs &cfg) {
     }
 #endif
     for (uint8_t i = 0; i < LENGTH_OF_SMOOTHED_AMPLITUDES; i++ ) {
-        cfg.amplitudes[i] = (cfg.amplitudes[i] + cfg.smoothing_amplitudes[i]) >> 1;
-        cfg.smoothing_amplitudes[i] = cfg.amplitudes[i];
+//        cfg.amplitudes[i] = (cfg.amplitudes[i] + cfg.smoothing_amplitudes[i]) >> 1;
+//        cfg.smoothing_amplitudes[i] = cfg.amplitudes[i];
     }
 }
 
