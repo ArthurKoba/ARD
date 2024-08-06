@@ -5,6 +5,7 @@
 #include "default_defs.h"
 #include "stdint.h"
 #include "BDSP.h"
+#include "FastLED.h"
 
 enum ColorMode {
     WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE, MOVE_TO_CENTER_MODE, FADE_MODE,

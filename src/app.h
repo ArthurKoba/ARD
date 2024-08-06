@@ -2,6 +2,7 @@
 #define ARD_APP_H
 
 #include "config.h"
+#include "default_defs.h"
 
 #include <Arduino.h>
 #include <FastLED.h>
@@ -23,7 +24,7 @@ public:
         CFastLED::addLeds<LED_TYPE, STRIP_PIN, LED_COLOR_ORDER>(context.leds, NUM_LEDS);
         FastLED.setCorrection(TypicalLEDStrip);
         init_segments(context);
-        init_eeprom(context);
+//        init_eeprom(context);
         init_audio_analyzer(context.analyzer);
         init_buttons();
         init_bdsp(context.transmitter);
@@ -34,7 +35,7 @@ public:
 
     void loop() {
         check_buttons(context);
-        check_need_update_saves(context);
+//        check_need_update_saves(context);
         show_color_modes(context);
     }
 private:
