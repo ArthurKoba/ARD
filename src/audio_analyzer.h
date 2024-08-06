@@ -88,6 +88,11 @@ void calibrate_audio_analyzer(AnalyzerConfigs &cfg) {
 
 
 void init_audio_analyzer(AnalyzerConfigs &cfg) {
+    pinMode(AR_MIC_PIN, OUTPUT);
+    digitalWrite(AR_MIC_PIN, false);
+
+    pinMode(GAIN_MIC_PIN, OUTPUT);
+    digitalWrite(GAIN_MIC_PIN, true);
 
 #if not defined(KOBA_CONF)
     analogReference(INTERNAL2V56);
