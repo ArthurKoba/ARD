@@ -4,21 +4,24 @@
 #include "color_modes.h"
 
 
-uint8_t getBrightCRT(uint8_t power, float calibrate = 1.0) {
+uint8_t CRT_correction(uint8_t power, float calibrate = 1.0) {
     return power > 0 ? (1 + uint16_t((calibrate * power * power + 255))) >> 8 : 0;
 }
 
 uint8_t calc_bright(uint16_t temp) {
-    return getBrightCRT(constrain(temp, 0, 255));
+    return CRT_correction(constrain(temp, 0, 255));
 }
 
-class ColorMusic : public AbstractColorMode {
+class ColorMusicMode : public AbstractColorMode {
 public:
-    ColorMusic() {
+    ColorMusicMode() {
         show_delay_ms = COLOR_MUSIC_DEF_DELAY_MS;
     }
+
+    bool handle_input_event(input_event_t input) override {return false;}
+
 private:
-    void calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) const override {
 
 //        if (ctx.analyzer.need_calibration) {
 //                calibrate_audio_analyzer(ctx.analyzer);

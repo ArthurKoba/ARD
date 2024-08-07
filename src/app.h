@@ -4,14 +4,14 @@
 #include "config.h"
 
 #include <Vector.h>
-#include "eeprom_saves.h"
+//#include "eeprom_saves.h"
 #include "input_controller.h"
-#include "led_controller.h"
+//#include "led_controller.h"
 #include "color_modes.h"
+#include "color_music_mode.h"
 //#include "types.h"
 //#include "audio_analyzer.h"
 //#include "bdsp_sender.h"
-
 
 
 class Application {
@@ -22,19 +22,25 @@ public:
 
 //        init_eeprom(context);
 //        init_audio_analyzer(analyzer);
-
-        led_controller.init();
-        init_modes();
-        input_controller.init([] (input_event_t event, void *context) {
-
-        }, this);
-
-
-
 //        init_bdsp(transmitter);
 //        analyzer.sample_offset = 570;
 //        analyzer.need_calibration = false;
-//        set_mode(WhiteMode);
+        led_controller.init();
+        init_modes();
+
+        input_controller.init([] (input_event_t event, void *context) {
+            auto &t = *reinterpret_cast<Application*>(context);
+            switch (event) {
+                case CHANGE_BUTTON:
+                    t.current_mode = static_cast<ColorMode>(t.current_mode + 1);
+                    if (t.current_mode >= NUMBER_OF_MODES) t.current_mode = WHITE_MODE;
+                    break;
+                case DECREASE_BUTTON:
+                case INCREASE_BUTTON:
+                    t.color_modes_p[t.current_mode]->handle_input_event(event);
+                    break;
+            }
+        },this);
     }
 
     void loop() {
@@ -47,19 +53,16 @@ public:
         delete color_modes_p.data();
     }
 
-
 private:
     InputController input_controller;
     LedController led_controller;
     Vector<AbstractColorMode*> color_modes_p;
-    ColorMode current_mode = WHITE_MODE;
-
-
-//    BDSPTransmitter transmitter;
+    ColorMode current_mode = FILL_WHITE_MODE;
 
     void show_modes() {
         if (not color_modes_p[current_mode]) return;
-        color_modes_p[current_mode]->show(led_controller);
+        bool is_need_show = color_modes_p[current_mode]->calculate(led_controller);
+        if (is_need_show) led_controller.show();
     }
 
     void init_modes () {
@@ -96,17 +99,15 @@ private:
                     color_modes_p.push_back(new Rainbow3Mode);
                     break;
                 case FIRE_MODE:
-                    color_modes_p.push_back(new FadeMode);
+                    color_modes_p.push_back(new FireMode);
                     break;
                 case COLOR_MUSIC:
-                    color_modes_p.push_back(new RainbowMode);
+                    color_modes_p.push_back(new ColorMusicMode);
                 case NUMBER_OF_MODES:
                     break;
             }
         }
     }
-
-
 };
 
 #endif //ARD_APP_H

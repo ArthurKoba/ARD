@@ -5,6 +5,17 @@
 #include <FastLED.h>
 #include <Vector.h>
 
+uint8_t CRT(uint8_t power, float calibrate = 1.0) {
+    return power > 0 ? (1 + uint16_t((calibrate * power * power + 255))) >> 8 : 0;
+}
+
+CRGB CRGB_f(uint8_t r, uint8_t g, uint8_t b) {
+    return {CRT(r), CRT(g), CRT(b)};
+}
+
+CRGB CRGB_f(CRGB color) {
+    return {CRT(color.r), CRT(color.g), CRT(color.b)};
+}
 
 struct Segment {
     uint16_t start;
@@ -16,11 +27,11 @@ class LedController {
 public:
     void init() {
         CFastLED::addLeds<LED_TYPE, STRIP_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS);
-        FastLED.setCorrection(TypicalLEDStrip);
+//        FastLED.setCorrection(TypicalLEDStrip);
         init_segments();
     }
 
-    static void show() {
+    void show() {
         FastLED.show();
     }
 
@@ -30,7 +41,7 @@ public:
     }
 
     void fill_leds(CRGB color, uint16_t start_led = 0, uint16_t end_led = NUM_LEDS) {
-        if (end_led >= NUM_LEDS) end_led = NUM_LEDS - 1;
+        if (end_led > number_of_leds()) end_led = number_of_leds();
         for (uint16_t i = start_led; i < end_led; ++i) leds[i] = color;
     }
 

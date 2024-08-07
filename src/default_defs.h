@@ -121,6 +121,17 @@
 #define FIRE_MODE_MAX_SAT 255
 #endif
 
+#if not defined(BLINK_MODE_DEF_DELAY_MS)
+#define BLINK_MODE_DEF_DELAY_MS 100
+#endif
+#if not defined(BLINK_MODE_MIN_DELAY_MS)
+#define BLINK_MODE_MIN_DELAY_MS 10
+#endif
+#if not defined(BLINK_MODE_MAX_DELAY_MS)
+#define BLINK_MODE_MAX_DELAY_MS 2000
+#endif
+
+
 #if not defined(COLOR_MUSIC_DEF_DELAY_MS)
 #define COLOR_MUSIC_DEF_DELAY_MS 10
 #endif

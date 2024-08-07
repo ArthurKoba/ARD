@@ -4,7 +4,7 @@
 #define BUTTONS_DELAY_MS 200 // Задержка между действиями кнопок.
 
 #define WHITE_MODE_DEF_DELAY_MS 100
-#define WHITE_MODE_MIN_BRIGHT 10
+#define WHITE_MODE_MIN_BRIGHT 30
 #define WHITE_MODE_MAX_BRIGHT 255
 
 #define CREATIVE_MODE_DEF_DELAY_MS 30
@@ -48,6 +48,10 @@
 #define FIRE_MODE_MAX_BRIGHT 255  // макс. яркость огня
 #define FIRE_MODE_MIN_SAT 245     // максимальная насыщенность
 #define FIRE_MODE_MAX_SAT 255     // максимальная насыщенность
+
+#define BLINK_MODE_DEF_DELAY_MS 200
+#define BLINK_MODE_MIN_DELAY_MS 10
+#define BLINK_MODE_MAX_DELAY_MS 2000
 
 #define COLOR_MUSIC_DEF_DELAY_MS 5
 
