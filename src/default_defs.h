@@ -163,4 +163,20 @@
 #error AUDIO_PIN not defined!!!
 #endif
 
+#if not defined(INCREASE_PIN) or not defined(DECREASE_PIN) or not defined(CHANGE_MODE_PIN)
+#error INCREASE_PIN or DECREASE_PIN or CHANGE_MODE_PIN not defined!!!
+#endif
+
+#if not defined(BUTTONS_DELAY_MS)
+#define BUTTONS_DELAY_MS 100
+#endif
+
+#if not defined(SECTOR_1_START) or not defined(SECTOR_1_END) or not defined(SECTOR_2_START) or not defined(SECTOR_2_END) or \
+    not defined(SECTOR_3_START) or not defined(SECTOR_3_END) or not defined(SECTOR_4_START) or not defined(SECTOR_4_END) or \
+    not defined(SECTOR_5_START) or not defined(SECTOR_5_END) or not defined(SECTOR_6_START) or not defined(SECTOR_6_END) or \
+    not defined(SECTOR_7_START) or not defined(SECTOR_7_END) or not defined(SECTOR_8_START) or not defined(SECTOR_8_END)
+#error There is an error when declaring sectors
+
+#endif
+
 #endif //ARD_DEFAULT_DEFS_H
