@@ -78,7 +78,7 @@ public:
     };
 
     ~CreativeMode() override {
-        delete segment_hues.data();
+        delete [] segment_hues.data();
     }
 
     bool handle_input_event(input_event_t input) override {

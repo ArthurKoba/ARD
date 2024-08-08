@@ -64,7 +64,7 @@ public:
     }
 
     ~LedController() {
-        delete segments.data();
+        delete [] segments.data();
     }
 
 private:
