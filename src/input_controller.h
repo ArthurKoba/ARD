@@ -16,6 +16,10 @@ typedef void (*input_controller_callback_t)(input_event_t, void *);
 
 
 class InputController {
+private:
+    input_controller_callback_t _callback_p = nullptr;
+    void *_callback_context_p = nullptr;
+
 public:
     void init(input_controller_callback_t callback, void *context) {
         _callback_p = callback;
@@ -40,9 +44,6 @@ public:
     }
 
 private:
-    input_controller_callback_t _callback_p = nullptr;
-    void *_callback_context_p = nullptr;
-
     void check_change_mode_button() {
         static bool is_wait_release = false;
         _exit_timer(BUTTONS_DELAY_MS);

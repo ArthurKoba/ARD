@@ -24,6 +24,10 @@ struct Segment {
 
 
 class LedController {
+private:
+    CRGB leds[NUM_LEDS]{};
+    Vector<Segment> segments;
+    Segment _segment_memory[NUMBER_OF_SEGMENTS]{};
 public:
     void init() {
         CFastLED::addLeds<LED_TYPE, STRIP_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS);
@@ -55,7 +59,7 @@ public:
         leds[index] = color;
     }
 
-    size_t number_of_leds() {
+    const size_t number_of_leds() {
         return NUM_LEDS;
     }
 
@@ -63,24 +67,17 @@ public:
         return segments.size();
     }
 
-    ~LedController() {
-        delete [] segments.data();
-    }
-
 private:
-    CRGB leds[NUM_LEDS];
-    Vector<Segment> segments;
-
     void init_segments() {
-        segments.setStorage(new Segment[8], 8, 0);
-        segments.push_back({SECTOR_1_START, SECTOR_1_END});
-        segments.push_back({SECTOR_2_START, SECTOR_2_END});
-        segments.push_back({SECTOR_3_START, SECTOR_3_END});
-        segments.push_back({SECTOR_4_START, SECTOR_4_END});
-        segments.push_back({SECTOR_5_START, SECTOR_5_END});
-        segments.push_back({SECTOR_6_START, SECTOR_6_END});
-        segments.push_back({SECTOR_7_START, SECTOR_7_END});
-        segments.push_back({SECTOR_8_START, SECTOR_8_END});
+        segments.setStorage(_segment_memory, NUMBER_OF_SEGMENTS, NUMBER_OF_SEGMENTS);
+        segments[0] = {SECTOR_1_START, SECTOR_1_END};
+        segments[1] = {SECTOR_2_START, SECTOR_2_END};
+        segments[2] = {SECTOR_3_START, SECTOR_3_END};
+        segments[3] = {SECTOR_4_START, SECTOR_4_END};
+        segments[4] = {SECTOR_5_START, SECTOR_5_END};
+        segments[5] = {SECTOR_6_START, SECTOR_6_END};
+        segments[6] = {SECTOR_7_START, SECTOR_7_END};
+        segments[7] = {SECTOR_8_START, SECTOR_8_END};
     }
 };
 

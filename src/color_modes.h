@@ -29,7 +29,7 @@ public:
     virtual bool handle_input_event(input_event_t input) = 0;
     virtual ~AbstractColorMode() = default;
 protected:
-    virtual void _calculate(LedController &controller) const = 0;
+    virtual void _calculate(LedController &controller) = 0;
 };
 
 
@@ -54,10 +54,11 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
         controller.fill_leds(CRGB_f(white_mode_bright,white_mode_bright, white_mode_bright));
     }
 };
+
 
 
 
@@ -65,16 +66,17 @@ class CreativeMode : public AbstractColorMode {
     // 7 сегментов меняют цвет, 255 оттенков, кроме последнего сегмента 8-го, состоящего из центральной точки.
     // Она всегда горит белым цветом, у неё просто меняется яркость если пытаешься менять цвет в этом режиме.
 public:
+    uint8_t _memory[NUMBER_OF_SEGMENTS]{};
     Vector<uint8_t> segment_hues;
     size_t current_hue = 0;
 
-    explicit CreativeMode(size_t number_of_segments) {
+    CreativeMode() {
         show_delay_ms = CREATIVE_MODE_DEF_DELAY_MS;
-        segment_hues.setStorage(new uint8_t[number_of_segments], number_of_segments, 0);
-        for (size_t i = 0; i < number_of_segments - 1; ++i) {
-            segment_hues.push_back(42 * i);
+        segment_hues.setStorage(_memory, NUMBER_OF_SEGMENTS, NUMBER_OF_SEGMENTS);
+        for (size_t i = 0; i < segment_hues.size() - 1; ++i) {
+            segment_hues[i] = 42 * i;
         }
-        segment_hues.push_back(255);
+        segment_hues[segment_hues.size()] = 255;
     };
 
     ~CreativeMode() override {
@@ -91,7 +93,7 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
 
         for (size_t i = 0; i < controller.number_of_segments() - 1; ++i) {
             controller.set_color_to_segment(i, CHSV(segment_hues[i],255, 255));
@@ -126,7 +128,7 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
         static uint16_t fullness = 0;
         static bool is_fill = true;
         static uint16_t count_waits_ = 0;
@@ -173,7 +175,7 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
         static uint8_t fullness = 0;
         static bool is_fill = true;
 
@@ -211,7 +213,7 @@ public:
 
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
 
         static uint8_t bright = 254;
         static bool is_fade = false;
@@ -243,7 +245,7 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
 
         static uint8_t current_index = 0;
 
@@ -273,7 +275,7 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
 
         static uint8_t current_index = 0;
         for (size_t i = 0; i < controller.number_of_leds(); ++i) {
@@ -302,7 +304,7 @@ public:
     }
 
 private:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
 
         static uint8_t current_index = 0;
         static uint8_t current_index_inverse = 127;
@@ -358,7 +360,7 @@ public:
 private:
     enum change_t {HUE_START, HUE_GAP, FIRE_STEP} ;
 
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
 
         static uint16_t counter = 0;
 
@@ -373,8 +375,6 @@ private:
         counter += 1;
     }
 };
-
-#
 
 class BlinkMode : public AbstractColorMode {
 public:
@@ -394,7 +394,7 @@ public:
     }
 
 protected:
-    void _calculate(LedController &controller) const override {
+    void _calculate(LedController &controller) override {
         static bool is_white = true;
         controller.fill_leds(is_white? CRGB::White : CRGB::Black);
         is_white = not is_white;

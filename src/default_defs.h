@@ -182,6 +182,8 @@
 #define BUTTONS_DELAY_MS 100
 #endif
 
+#define NUMBER_OF_SEGMENTS 8
+
 #if not defined(SECTOR_1_START) or not defined(SECTOR_1_END) or not defined(SECTOR_2_START) or not defined(SECTOR_2_END) or \
     not defined(SECTOR_3_START) or not defined(SECTOR_3_END) or not defined(SECTOR_4_START) or not defined(SECTOR_4_END) or \
     not defined(SECTOR_5_START) or not defined(SECTOR_5_END) or not defined(SECTOR_6_START) or not defined(SECTOR_6_END) or \

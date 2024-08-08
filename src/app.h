@@ -4,26 +4,27 @@
 #include "config.h"
 
 #include <Vector.h>
+#include <BDSP.h>
 //#include "eeprom_saves.h"
 #include "led_controller.h"
 #include "input_controller.h"
 #include "color_modes.h"
 #include "color_music_mode.h"
 #include "audio_analyzer.h"
-//#include "bdsp_sender.h"
 
 
 class Application {
 public:
+    InputController input_controller;
+    LedController led_controller;
+    AbstractColorMode* color_modes_p[NUMBER_OF_MODES]; // 119 bytes
+    ColorMode current_mode = COLOR_MUSIC;
+    Analyzer analyzer;
+    BDSPTransmitter transmitter;
+
     void init() {
-        Serial.begin(SERIAL_SPEED);
         Serial.println(F("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
 
-//        init_eeprom(context);
-//        init_audio_analyzer(analyzer);
-//        init_bdsp(transmitter);
-//        analyzer.sample_offset = 570;
-//        analyzer.need_calibration = false;
         led_controller.init();
         init_modes();
 
@@ -40,6 +41,17 @@ public:
                     break;
             }
         },this);
+
+        COBS::config_t config = {.delimiter = '\n', .depth = 64};
+
+        transmitter.set_config(config, [] (uint8_t *data_p, size_t size, void *context) {
+            Serial.write(data_p, size);
+            Serial.flush();
+        });
+
+//        is_need_calibration = false;
+//        init_eeprom(context);
+
     }
 
     void loop() {
@@ -52,19 +64,8 @@ public:
     }
 
 private:
-    InputController input_controller;
-    LedController led_controller;
-    AbstractColorMode* color_modes_p[NUMBER_OF_MODES];
-    ColorMode current_mode = COLOR_MUSIC;
-
-    void show_modes() {
-        if (not color_modes_p[current_mode]) return;
-        bool is_need_show = color_modes_p[current_mode]->calculate(led_controller);
-        if (is_need_show) led_controller.show();
-    }
 
     void init_modes () {
-
         for (int i = 0; i < ColorMode::NUMBER_OF_MODES; ++i) {
             switch (static_cast<ColorMode>(i)) {
                 case WHITE_MODE:
@@ -100,6 +101,12 @@ private:
                     break;
             }
         }
+    }
+
+    void show_modes() {
+        if (not color_modes_p[current_mode]) return;
+        bool is_need_show = color_modes_p[current_mode]->calculate(led_controller);
+        if (is_need_show) led_controller.show();
     }
 };
 
