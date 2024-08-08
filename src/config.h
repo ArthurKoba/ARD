@@ -38,15 +38,13 @@
 #define RAINBOW3_MODE_HUE_MUL 1
 #define RAINBOW3_MODE_SEGMENTS_OFFSET 31
 
-#define FIRE_MODE_DEF_DELAY_MS 30
-#define FIRE_MODE_MIN_DELAY_MS 1
-#define FIRE_MODE_MAX_DELAY_MS 100
-#define FIRE_MODE_HUE_GAP 21      // заброс по оттенку
-#define FIRE_MODE_FIRE_STEP 30    // шаг огня
-#define FIRE_MODE_HUE_START 0     // начальный цвет огня (0 красный, 80 зелёный, 140 молния, 190 розовый)
-#define FIRE_MODE_MIN_BRIGHT 70   // минимальная яркость огня
+#define FIRE_MODE_DEF_DELAY_MS 10
+#define FIRE_MODE_HUE_GAP 34     // заброс по оттенку
+#define FIRE_MODE_FIRE_STEP 10    // шаг огня
+#define FIRE_MODE_HUE_START 160   // начальный цвет огня (0 красный, 80 зелёный, 140 молния, 190 розовый)
+#define FIRE_MODE_MIN_BRIGHT 10   // минимальная яркость огня
 #define FIRE_MODE_MAX_BRIGHT 255  // макс. яркость огня
-#define FIRE_MODE_MIN_SAT 245     // максимальная насыщенность
+#define FIRE_MODE_MIN_SAT 10     // максимальная насыщенность
 #define FIRE_MODE_MAX_SAT 255     // максимальная насыщенность
 
 #define BLINK_MODE_DEF_DELAY_MS 200

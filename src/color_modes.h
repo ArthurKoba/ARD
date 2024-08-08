@@ -1,11 +1,6 @@
 #ifndef ARD_COLOR_MODES_H
 #define ARD_COLOR_MODES_H
 
-#include "types.h"
-//#include "pixeltypes.h"
-//#include "audio_analyzer.h"
-//#include "bdsp_sender.h"
-
 #include "led_controller.h"
 #include "input_controller.h"
 
@@ -16,7 +11,6 @@ enum ColorMode : uint8_t {
     RAINBOW_MODE, RAINBOW2_MODE, RAINBOW3_MODE, FIRE_MODE,
     COLOR_MUSIC, NUMBER_OF_MODES
 };
-
 
 
 class AbstractColorMode {
@@ -330,30 +324,48 @@ private:
 
 class FireMode : public AbstractColorMode {
 public:
+
+    uint8_t hue_start = FIRE_MODE_HUE_START;
+    uint8_t hue_gap = FIRE_MODE_HUE_GAP;
+    uint8_t fire_step = FIRE_MODE_FIRE_STEP;
+
+
     FireMode() {
         show_delay_ms = FIRE_MODE_DEF_DELAY_MS;
     }
 
     bool handle_input_event(input_event_t input) override {
-        uint16_t new_show_delay_ms = constrain(
-            int(show_delay_ms) + input,
-            FIRE_MODE_MIN_DELAY_MS,
-            FIRE_MODE_MAX_DELAY_MS
-        );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
+
+        static change_t parameter = HUE_START;
+        if (input == CHANGE_BUTTON) return false;
+
+        switch (input) {
+            case DECREASE_BUTTON:
+                switch (parameter) {
+                    case HUE_START: hue_start++;    break;
+                    case HUE_GAP:   hue_gap++;      break;
+                    case FIRE_STEP: fire_step++;    break;
+                }
+                break;
+            case INCREASE_BUTTON:
+                parameter = parameter >= FIRE_STEP ? HUE_START : static_cast<change_t>(parameter + 1);
+            case CHANGE_BUTTON:
+                break;
+        }
         return true;
     }
 
 private:
+    enum change_t {HUE_START, HUE_GAP, FIRE_STEP} ;
+
     void _calculate(LedController &controller) const override {
 
         static uint16_t counter = 0;
 
         for(size_t i = 0; i < controller.number_of_leds(); i++) {
-            uint8_t value = inoise8(i * FIRE_MODE_FIRE_STEP, counter);
+            uint8_t value = inoise8(i * fire_step, counter);
             controller.set_color_to_led(i, CHSV(
-                    FIRE_MODE_HUE_START + map(value, 0, 255, 0, FIRE_MODE_HUE_GAP),
+                    hue_start + map(value, 0, 255, 0, hue_gap),
                     constrain(map(value, 0, 255, FIRE_MODE_MAX_SAT, FIRE_MODE_MIN_SAT), 0, 255),
                     constrain(map(value, 0, 255, FIRE_MODE_MIN_BRIGHT, FIRE_MODE_MAX_BRIGHT), 0, 255)
             ));
