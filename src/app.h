@@ -5,12 +5,11 @@
 
 #include <Vector.h>
 //#include "eeprom_saves.h"
+#include "led_controller.h"
 #include "input_controller.h"
-//#include "led_controller.h"
 #include "color_modes.h"
 #include "color_music_mode.h"
-//#include "types.h"
-//#include "audio_analyzer.h"
+#include "audio_analyzer.h"
 //#include "bdsp_sender.h"
 
 
@@ -32,8 +31,8 @@ public:
             auto &t = *reinterpret_cast<Application*>(context);
             switch (event) {
                 case CHANGE_BUTTON:
-                    t.current_mode = static_cast<ColorMode>(t.current_mode + 1);
-                    if (t.current_mode >= NUMBER_OF_MODES) t.current_mode = WHITE_MODE;
+                    t.current_mode = t.current_mode >= NUMBER_OF_MODES ? WHITE_MODE :
+                            static_cast<ColorMode>(t.current_mode + 1);
                     break;
                 case DECREASE_BUTTON:
                 case INCREASE_BUTTON:
@@ -50,14 +49,13 @@ public:
 
     ~Application() {
         for (auto & color_mode : color_modes_p) delete color_mode;
-        delete color_modes_p.data();
     }
 
 private:
     InputController input_controller;
     LedController led_controller;
-    Vector<AbstractColorMode*> color_modes_p;
-    ColorMode current_mode = FILL_WHITE_MODE;
+    AbstractColorMode* color_modes_p[NUMBER_OF_MODES];
+    ColorMode current_mode = COLOR_MUSIC;
 
     void show_modes() {
         if (not color_modes_p[current_mode]) return;
@@ -66,43 +64,38 @@ private:
     }
 
     void init_modes () {
-        if (not color_modes_p.empty()) return;
-
-        color_modes_p.setStorage(new AbstractColorMode*[ColorMode::NUMBER_OF_MODES], ColorMode::NUMBER_OF_MODES, 0);
 
         for (int i = 0; i < ColorMode::NUMBER_OF_MODES; ++i) {
             switch (static_cast<ColorMode>(i)) {
                 case WHITE_MODE:
-                    color_modes_p.push_back(new WhiteMode);
+                    color_modes_p[i] = new WhiteMode;
                     break;
                 case CREATIVE_MODE:
-                    color_modes_p.push_back(
-                        new CreativeMode(led_controller.number_of_segments())
-                    );
+                    color_modes_p[i] = new CreativeMode(led_controller.number_of_segments());
                     break;
                 case FILL_WHITE_MODE:
-                    color_modes_p.push_back(new FillWhiteMode);
+                    color_modes_p[i] = new FillWhiteMode;
                     break;
                 case MOVE_TO_CENTER_MODE:
-                    color_modes_p.push_back(new ToCenterMode);
+                    color_modes_p[i] = new ToCenterMode;
                     break;
                 case FADE_MODE:
-                    color_modes_p.push_back(new FadeMode);
+                    color_modes_p[i] = new FadeMode;
                     break;
                 case RAINBOW_MODE:
-                    color_modes_p.push_back(new RainbowMode);
+                    color_modes_p[i] = new RainbowMode;
                     break;
                 case RAINBOW2_MODE:
-                    color_modes_p.push_back(new Rainbow2Mode);
+                    color_modes_p[i] = new Rainbow2Mode;
                     break;
                 case RAINBOW3_MODE:
-                    color_modes_p.push_back(new Rainbow3Mode);
+                    color_modes_p[i] = new Rainbow3Mode;
                     break;
                 case FIRE_MODE:
-                    color_modes_p.push_back(new FireMode);
+                    color_modes_p[i] = new FireMode;
                     break;
                 case COLOR_MUSIC:
-                    color_modes_p.push_back(new ColorMusicMode);
+                    color_modes_p[i] = new ColorMusicMode;
                 case NUMBER_OF_MODES:
                     break;
             }
