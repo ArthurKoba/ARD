@@ -14,11 +14,12 @@ enum ColorMode : uint8_t {
 
 
 class AbstractColorMode {
+private:
+    uint32_t last_update = 0;
 public:
     uint16_t show_delay_ms = 0;
 
     bool calculate(LedController &controller) {
-        static uint32_t last_update = 0;
         if (millis() - last_update < show_delay_ms) return false;
         last_update = millis();
         _calculate(controller);
@@ -27,7 +28,6 @@ public:
 
     virtual bool handle_input_event(input_event_t input) = 0;
     virtual ~AbstractColorMode() = default;
-
 protected:
     virtual void _calculate(LedController &controller) const = 0;
 };
@@ -393,7 +393,7 @@ public:
         return true;
     }
 
-private:
+protected:
     void _calculate(LedController &controller) const override {
         static bool is_white = true;
         controller.fill_leds(is_white? CRGB::White : CRGB::Black);
