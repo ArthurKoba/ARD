@@ -152,7 +152,6 @@ public:
         fht_transform();
         fht_mag_lin8_no_asm();
         timer = millis() - timer;
-        uint16_t sum = 0;
         for (int i = 0; i < LENGTH_OF_SMOOTHED_AMPLITUDES; i++) {
             if (i < 16) amplitudes[i] >>= 1;
             amplitudes[i] = (amplitudes[i] + smoothing_amplitudes[i]) >> 1;
@@ -168,7 +167,7 @@ public:
 
         amplitudes[FHT_AMPLITUDES_N - 2] = freeMemory() / 10;
         amplitudes[FHT_AMPLITUDES_N - 1] = timer * 10;
-        transmitter->send_data(2, amplitudes, FHT_AMPLITUDES_N);
+//        transmitter->send_data(2, amplitudes, FHT_AMPLITUDES_N);
     }
 
     AudioInformation calculate_colors() {
@@ -178,7 +177,8 @@ public:
         uint16_t ampl = 0;
         int16_t bright = 0;
 
-        history[KICK].put_to_history(amplitudes[2]);
+
+        history[KICK].put_to_history(amplitudes[0] < amplitudes[1] ? amplitudes[1] - amplitudes[0] : amplitudes[1]);
         for (int i = 0; i < 3; ++i) bright += history[KICK].data[i];
         bright =  constrain((bright) - 15, 0, 255);
         info[KICK] = bright;
