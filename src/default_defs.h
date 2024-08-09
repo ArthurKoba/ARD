@@ -137,11 +137,11 @@
 #endif
 
 #if not defined(DELAY_BETWEEN_READ_SAMPLES_US)
-#define DELAY_BETWEEN_READ_SAMPLES_US 30
+#define DELAY_BETWEEN_READ_SAMPLES_US 0
 #endif
 
 #if not defined(LENGTH_OF_SMOOTHED_AMPLITUDES)
-#define LENGTH_OF_SMOOTHED_AMPLITUDES 16
+#define LENGTH_OF_SMOOTHED_AMPLITUDES 64
 #endif
 
 #if not defined(AMPLITUDES_HISTORY_LENGTH)
@@ -156,15 +156,8 @@
 #error NUM_LEDS not defined!
 #endif
 
-#define FFT_MODE 1
-
-#if (FFT_MODE == 0)
-#define LOG_OUT 1 // Тип амплитуд преобразования Хартли.
-#elif (FFT_MODE == 1)
-#define LIN_OUT 1
-#endif
-
-#define FHT_N 256 // Количество измерений сигнала для преобразования Хартли.
+#define FHT_SAMPLES_N 256 // Количество измерений сигнала для преобразования Хартли.
+#define NUMBER_OF_SAMPLES_WINDOW 25
 
 #if not defined(SILENCE_AMPLITUDE_LEVEL)
 #error SILENCE_AMPLITUDE_LEVEL not defined!

@@ -2,15 +2,25 @@
 #define ARD_APP_H
 
 #include "config.h"
+#include "Arduino.h"
 
-#include <Vector.h>
-#include <BDSP.h>
+
+uint16_t freeMemory() {
+    auto heap = static_cast<uint8_t*>(malloc(1));
+    if (not heap) return 0;
+    uint8_t stack;
+    uint16_t free_memory = &stack - heap;
+    free(heap);
+    return free_memory;
+}
+
 //#include "eeprom_saves.h"
 #include "led_controller.h"
 #include "input_controller.h"
 #include "color_modes.h"
 #include "color_music_mode.h"
 #include "audio_analyzer.h"
+#include <BDSP.h>
 
 
 class Application {
@@ -18,13 +28,27 @@ public:
     InputController input_controller;
     LedController led_controller;
     AbstractColorMode* color_mode_p = nullptr;
-    ColorMode current_mode = WHITE_MODE;
+    ColorMode current_mode = COLOR_MUSIC;
     Analyzer analyzer;
     BDSPTransmitter transmitter;
 
     void init() {
         Serial.begin(SERIAL_SPEED);
-        Serial.println(F("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
+        Serial.println(PSTR("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
+
+
+        COBS::config_t config = {.delimiter = '\n', .depth = 255};
+
+        transmitter.set_config(config, [] (uint8_t *data_p, size_t size, void *context) {
+            Serial.write(data_p, size);
+            Serial.flush();
+        });
+
+        analyzer.init();
+        analyzer.set_transmitter(transmitter);
+        analyzer.is_need_calibration = false;
+//        analyzer.send_samples = true;
+
 
         led_controller.init();
 
@@ -40,21 +64,10 @@ public:
                     break;
             }
         },this);
-
-        COBS::config_t config = {.delimiter = '\n', .depth = 64};
-
-        transmitter.set_config(config, [] (uint8_t *data_p, size_t size, void *context) {
-            Serial.write(data_p, size);
-            Serial.flush();
-        });
-
-//        is_need_calibration = false;
 //        init_eeprom(context);
-
     }
 
     void loop() {
-        show_current_mode();
         input_controller.check();
         show_current_mode();
     }
@@ -64,14 +77,14 @@ public:
     }
 
     void set_mode(ColorMode mode) {
-        current_mode = mode > COLOR_MUSIC ? WHITE_MODE : mode;
+        current_mode = mode >= COLOR_MUSIC ? WHITE_MODE : mode;
         delete color_mode_p;
         switch (mode) {
             case WHITE_MODE:
                 color_mode_p = new WhiteMode;
                 break;
             case CREATIVE_MODE:
-                color_mode_p = new CreativeMode();
+                color_mode_p = new FadeMode;
                 break;
             case FILL_WHITE_MODE:
                 color_mode_p = new FillWhiteMode;
@@ -96,8 +109,9 @@ public:
                 break;
             case COLOR_MUSIC:
                 color_mode_p = new ColorMusicMode(analyzer);
+                break;
         }
-    };
+    }
 
     void show_current_mode() {
         if (not color_mode_p) return set_mode(current_mode);
