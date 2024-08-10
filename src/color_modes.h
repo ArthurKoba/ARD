@@ -3,131 +3,124 @@
 
 #include "led_controller.h"
 #include "input_controller.h"
-
-
-
-enum ColorMode : uint8_t {
-    WHITE_MODE = 0, CREATIVE_MODE, FILL_WHITE_MODE, MOVE_TO_CENTER_MODE, FADE_MODE,
-    RAINBOW_MODE, RAINBOW2_MODE, RAINBOW3_MODE, FIRE_MODE,
-    COLOR_MUSIC
-};
+#include "eeprom_momory.h"
 
 
 class AbstractColorMode {
-private:
+protected:
     uint32_t last_update = 0;
-public:
-    uint16_t show_delay_ms = 0;
+    EEPROMMemory &mem;
 
-    bool calculate(LedController &controller) {
-        if (millis() - last_update < show_delay_ms) return false;
+    virtual void _calculate(LedController &controller) = 0;
+    virtual uint16_t _get_show_delay() const = 0;
+public:
+    explicit AbstractColorMode(EEPROMMemory &mem) : mem(mem) {};
+    virtual ~AbstractColorMode() = default;
+
+    virtual void handle_input_event(input_event_t input) = 0;
+
+    virtual bool calculate(LedController &controller) {
+        if (millis() - last_update < _get_show_delay()) return false;
         last_update = millis();
         _calculate(controller);
         return true;
     }
-
-    virtual bool handle_input_event(input_event_t input) = 0;
-    virtual ~AbstractColorMode() = default;
-protected:
-    virtual void _calculate(LedController &controller) = 0;
 };
 
 
+class WhiteMode final: public AbstractColorMode  {
+private:
+    uint8_t &bright = mem.storage.white_mode_bright;
 
-class WhiteMode : public AbstractColorMode {
 public:
-    uint8_t white_mode_bright = WHITE_MODE_MAX_BRIGHT;
+    explicit WhiteMode(EEPROMMemory &mem) : AbstractColorMode(mem) {};
 
-    WhiteMode() {
-        show_delay_ms = WHITE_MODE_DEF_DELAY_MS;
-    };
-
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
         uint16_t new_white_mode_bright = constrain(
-            int(white_mode_bright) + input * 10,
+            int(bright) + input * 10,
             WHITE_MODE_MIN_BRIGHT,
             WHITE_MODE_MAX_BRIGHT
         );
-        if (new_white_mode_bright == white_mode_bright) return false;
-        white_mode_bright = new_white_mode_bright;
-        return true;
+        if (new_white_mode_bright == mem.storage.white_mode_bright) return;
+        mem.storage.white_mode_bright = new_white_mode_bright;
+        mem.update();
     }
 
 private:
+    uint16_t _get_show_delay() const override { return WHITE_MODE_DEF_DELAY_MS; }
+
     void _calculate(LedController &controller) override {
-        controller.fill_leds(CRGB_f(white_mode_bright,white_mode_bright, white_mode_bright));
+        controller.fill_leds(CRGB_f(
+                mem.storage.white_mode_bright,
+                mem.storage.white_mode_bright,
+                mem.storage.white_mode_bright
+        ));
     }
 };
 
 
-
-
-class CreativeMode : public AbstractColorMode {
+class CreativeMode final: public AbstractColorMode {
     // 7 сегментов меняют цвет, 255 оттенков, кроме последнего сегмента 8-го, состоящего из центральной точки.
     // Она всегда горит белым цветом, у неё просто меняется яркость если пытаешься менять цвет в этом режиме.
-public:
-    uint8_t _memory[NUMBER_OF_SEGMENTS]{};
-    Vector<uint8_t> segment_hues;
+private:
+    LedController &controller;
+    uint8_t *hues = mem.storage.creative_mode_segments_hues;
     size_t current_hue = 0;
 
-    CreativeMode() {
-        show_delay_ms = CREATIVE_MODE_DEF_DELAY_MS;
-        segment_hues.setStorage(_memory, NUMBER_OF_SEGMENTS, NUMBER_OF_SEGMENTS);
-        for (size_t i = 0; i < segment_hues.size() - 1; ++i) {
-            segment_hues[i] = 42 * i;
-        }
-        segment_hues[segment_hues.size()] = 255;
-    };
+public:
+    explicit CreativeMode(EEPROMMemory &mem, LedController &ctrl) : AbstractColorMode(mem), controller(ctrl) {};
 
-    ~CreativeMode() override {
-        delete [] segment_hues.data();
+    static void init_colors(LedController &controller, uint8_t *hues) {
+        for (size_t i = 0; i < controller.number_of_segments() - 1; ++i) hues[i] = 42 * i;
+        hues[controller.number_of_segments() - 1] = 255;
     }
 
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
         if (input == input_event_t::INCREASE_BUTTON) {
-            current_hue = current_hue == segment_hues.max_size() ? 0 : current_hue + 1;
+            current_hue = current_hue >= controller.number_of_segments() ? 0 : current_hue + 1;
         } else if (input == input_event_t::DECREASE_BUTTON) {
-            segment_hues[current_hue] += 10;
+            hues[current_hue] += 10;
+            mem.update();
         }
-        return input not_eq input_event_t::CHANGE_BUTTON;
     }
 
 private:
-    void _calculate(LedController &controller) override {
+    uint16_t _get_show_delay() const override { return CREATIVE_MODE_DEF_DELAY_MS; }
 
+    void _calculate(LedController &ctrl_) override {
         for (size_t i = 0; i < controller.number_of_segments() - 1; ++i) {
-            controller.set_color_to_segment(i, CHSV(segment_hues[i],255, 255));
+            controller.set_color_to_segment(i, CHSV(hues[i],255, 255));
         }
-
         size_t last = controller.number_of_segments() - 1;
-        CRGB last_color = CHSV(segment_hues[last], segment_hues[last], segment_hues[last]);
-        controller.set_color_to_segment(last, last_color);
+        controller.set_color_to_segment(last, CRGB(hues[last], hues[last], hues[last]));
     }
 };
 
-class FillWhiteMode : public AbstractColorMode {
+
+class FillWhiteMode final: public AbstractColorMode {
     //  Поочередно зажигаются диоды начиная от внешнего периметра к центральной точке.
     //  Потом немого поработали включенными все диоды, затухают и цикл начинается заново.
     //  Кнопками меняется скорость работы режима + -.
-public:
+
     uint8_t count_wait = FILL_WHITE_MODE_COUNT_WAIT;
 
-    FillWhiteMode() {
-        show_delay_ms = FILL_WHITE_MODE_DEF_DELAY_MS;
-    }
+public:
+    explicit FillWhiteMode(EEPROMMemory &mem) : AbstractColorMode(mem) {};
 
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
-            int(show_delay_ms) + input,
+            int(mem.storage.fill_white_mode_show_delay_ms) + input,
             FILL_WHITE_MODE_MIN_DELAY_MS,
             FILL_WHITE_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
-        return true;
+        if (new_show_delay_ms == mem.storage.fill_white_mode_show_delay_ms) return;
+        mem.storage.fill_white_mode_show_delay_ms = new_show_delay_ms;
+        mem.update();
     }
 
 private:
+    uint16_t _get_show_delay() const override { return mem.storage.fill_white_mode_show_delay_ms; }
+
     void _calculate(LedController &controller) override {
         static uint16_t fullness = 0;
         static bool is_fill = true;
@@ -157,24 +150,28 @@ private:
     }
 };
 
-class ToCenterMode : public AbstractColorMode {
-public:
-    ToCenterMode() {
-        show_delay_ms = TO_CENTER_MODE_DEF_DELAY_MS;
-    }
 
-    bool handle_input_event(input_event_t input) override {
+class ToCenterMode final: public AbstractColorMode {
+
+    uint16_t &show_delay_ms = mem.storage.to_center_mode_show_delay_ms;
+
+public:
+    explicit ToCenterMode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
+
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
             int(show_delay_ms) + input * 100,
             TO_CENTER_MODE_MIN_DELAY_MS,
             TO_CENTER_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
+        if (new_show_delay_ms == show_delay_ms) return;
         show_delay_ms = new_show_delay_ms;
-        return true;
+        mem.update();
     }
 
 private:
+    uint16_t _get_show_delay() const override { return show_delay_ms; }
+
     void _calculate(LedController &controller) override {
         static uint8_t fullness = 0;
         static bool is_fill = true;
@@ -194,25 +191,25 @@ private:
     }
 };
 
-class FadeMode : public AbstractColorMode {
-public:
-    FadeMode() {
-        show_delay_ms = FADE_MODE_DEF_DELAY_MS;
-    }
 
-    bool handle_input_event(input_event_t input) override {
+class FadeMode final: public AbstractColorMode {
+public:
+    explicit FadeMode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
+
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
-            int(show_delay_ms) + input,
+            int(mem.storage.fade_mode_show_delay_ms) + input,
             FADE_MODE_MIN_DELAY_MS,
             FADE_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
-        return true;
+        if (new_show_delay_ms == mem.storage.fade_mode_show_delay_ms) return;
+        mem.storage.fade_mode_show_delay_ms = new_show_delay_ms;
+        mem.update();
     }
 
-
 private:
+    uint16_t _get_show_delay() const override { return mem.storage.fade_mode_show_delay_ms; }
+
     void _calculate(LedController &controller) override {
 
         static uint8_t bright = 254;
@@ -227,24 +224,24 @@ private:
 };
 
 
-class RainbowMode : public AbstractColorMode {
+class Rainbow1Mode final: public AbstractColorMode {
 public:
-    RainbowMode() {
-        show_delay_ms = RAINBOW_MODE_DEF_DELAY_MS;
-    }
+    explicit Rainbow1Mode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
 
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
-            int(show_delay_ms) + input,
+            int(mem.storage.rainbow1_mode_show_delay_ms) + input,
             RAINBOW_MODE_MIN_DELAY_MS,
             RAINBOW_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
-        return true;
+        if (new_show_delay_ms == mem.storage.rainbow1_mode_show_delay_ms) return;
+        mem.storage.rainbow1_mode_show_delay_ms = new_show_delay_ms;
+        mem.update();
     }
 
 private:
+    uint16_t _get_show_delay() const override { return mem.storage.rainbow1_mode_show_delay_ms; }
+
     void _calculate(LedController &controller) override {
 
         static uint8_t current_index = 0;
@@ -257,24 +254,25 @@ private:
     }
 };
 
-class Rainbow2Mode : public AbstractColorMode {
-public:
-    Rainbow2Mode() {
-        show_delay_ms = RAINBOW2_MODE_DEF_DELAY_MS;
-    }
 
-    bool handle_input_event(input_event_t input) override {
+class Rainbow2Mode final: public AbstractColorMode {
+public:
+    explicit Rainbow2Mode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
+
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
-            int(show_delay_ms) + input,
+            int(mem.storage.rainbow2_mode_show_delay_ms) + input,
             RAINBOW2_MODE_MIN_DELAY_MS,
             RAINBOW2_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
-        return true;
+        if (new_show_delay_ms == mem.storage.rainbow2_mode_show_delay_ms) return;
+        mem.storage.rainbow2_mode_show_delay_ms = new_show_delay_ms;
+        mem.update();
     }
 
 private:
+    uint16_t _get_show_delay() const override { return mem.storage.rainbow2_mode_show_delay_ms; }
+
     void _calculate(LedController &controller) override {
 
         static uint8_t current_index = 0;
@@ -286,24 +284,24 @@ private:
 };
 
 
-class Rainbow3Mode : public AbstractColorMode {
+class Rainbow3Mode final: public AbstractColorMode {
 public:
-    Rainbow3Mode() {
-        show_delay_ms = RAINBOW3_MODE_DEF_DELAY_MS;
-    }
+    explicit Rainbow3Mode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
 
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
-            int(show_delay_ms) + input,
+            int(mem.storage.rainbow3_mode_show_delay_ms) + input,
             RAINBOW3_MODE_MIN_DELAY_MS,
             RAINBOW3_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
-        return true;
+        if (new_show_delay_ms == mem.storage.rainbow3_mode_show_delay_ms) return;
+        mem.storage.rainbow3_mode_show_delay_ms = new_show_delay_ms;
+        mem.update();
     }
 
 private:
+    uint16_t _get_show_delay() const override { return mem.storage.rainbow3_mode_show_delay_ms; }
+
     void _calculate(LedController &controller) override {
 
         static uint8_t current_index = 0;
@@ -324,29 +322,23 @@ private:
 };
 
 
-class FireMode : public AbstractColorMode {
+class FireMode final: public AbstractColorMode {
+
+
 public:
+    explicit FireMode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
 
-    uint8_t hue_start = FIRE_MODE_HUE_START;
-    uint8_t hue_gap = FIRE_MODE_HUE_GAP;
-    uint8_t fire_step = FIRE_MODE_FIRE_STEP;
-
-
-    FireMode() {
-        show_delay_ms = FIRE_MODE_DEF_DELAY_MS;
-    }
-
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
 
         static change_t parameter = HUE_START;
-        if (input == CHANGE_BUTTON) return false;
+
 
         switch (input) {
             case DECREASE_BUTTON:
                 switch (parameter) {
-                    case HUE_START: hue_start++;    break;
-                    case HUE_GAP:   hue_gap++;      break;
-                    case FIRE_STEP: fire_step++;    break;
+                    case HUE_START: mem.storage.fire_mode_hue_start++;    break;
+                    case HUE_GAP:   mem.storage.fire_mode_hue_gap++;      break;
+                    case FIRE_STEP: mem.storage.fire_mode_step++;         break;
                 }
                 break;
             case INCREASE_BUTTON:
@@ -354,20 +346,22 @@ public:
             case CHANGE_BUTTON:
                 break;
         }
-        return true;
+        if (input == DECREASE_BUTTON) mem.update();
     }
 
 private:
-    enum change_t {HUE_START, HUE_GAP, FIRE_STEP} ;
+    enum change_t {HUE_START, HUE_GAP, FIRE_STEP};
+
+    uint16_t _get_show_delay() const override { return FIRE_MODE_DEF_DELAY_MS; }
 
     void _calculate(LedController &controller) override {
 
         static uint16_t counter = 0;
 
         for(size_t i = 0; i < controller.number_of_leds(); i++) {
-            uint8_t value = inoise8(i * fire_step, counter);
+            uint8_t value = inoise8(i * mem.storage.fire_mode_step, counter);
             controller.set_color_to_led(i, CHSV(
-                    hue_start + map(value, 0, 255, 0, hue_gap),
+                    mem.storage.fire_mode_hue_start + map(value, 0, 255, 0, mem.storage.fire_mode_hue_gap),
                     constrain(map(value, 0, 255, FIRE_MODE_MAX_SAT, FIRE_MODE_MIN_SAT), 0, 255),
                     constrain(map(value, 0, 255, FIRE_MODE_MIN_BRIGHT, FIRE_MODE_MAX_BRIGHT), 0, 255)
             ));
@@ -376,24 +370,24 @@ private:
     }
 };
 
-class BlinkMode : public AbstractColorMode {
+class BlinkMode final: public AbstractColorMode {
 public:
-    BlinkMode() {
-        show_delay_ms = BLINK_MODE_DEF_DELAY_MS;
-    }
+    explicit BlinkMode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
 
-    bool handle_input_event(input_event_t input) override {
+    void handle_input_event(input_event_t input) override {
         uint16_t new_show_delay_ms = constrain(
-                int(show_delay_ms) + input,
+                int(mem.storage.blink_mode_show_delay_ms) + input,
                 BLINK_MODE_MIN_DELAY_MS,
                 BLINK_MODE_MAX_DELAY_MS
         );
-        if (new_show_delay_ms == show_delay_ms) return false;
-        show_delay_ms = new_show_delay_ms;
-        return true;
+        if (new_show_delay_ms == mem.storage.blink_mode_show_delay_ms) return;
+        mem.storage.blink_mode_show_delay_ms = new_show_delay_ms;
+        mem.update();
     }
 
 protected:
+    uint16_t _get_show_delay() const override { return mem.storage.blink_mode_show_delay_ms; }
+
     void _calculate(LedController &controller) override {
         static bool is_white = true;
         controller.fill_leds(is_white? CRGB::White : CRGB::Black);

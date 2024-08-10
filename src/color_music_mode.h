@@ -6,19 +6,18 @@
 #include "audio_analyzer.h"
 
 
-class ColorMusicMode : public AbstractColorMode  {
+class ColorMusicMode final: public AbstractColorMode  {
 public:
     Analyzer &analyzer;
     BlinkMode blink_mode;
 
-    explicit ColorMusicMode(Analyzer &analyzer) : analyzer(analyzer) {
-        show_delay_ms = COLOR_MUSIC_DEF_DELAY_MS;
-    }
+    explicit ColorMusicMode(EEPROMMemory &mem, Analyzer &analyzer) : AbstractColorMode(mem), analyzer(analyzer), blink_mode(mem) {}
 
-
-    bool handle_input_event(input_event_t input) override {return false;}
+    void handle_input_event(input_event_t input) override {}
 
 private:
+    uint16_t _get_show_delay() const override { return COLOR_MUSIC_DEF_DELAY_MS; }
+
     void _calculate(LedController &controller) override {
         if (analyzer.calibrate_audio_analyzer()) {
             blink_mode.calculate(controller);

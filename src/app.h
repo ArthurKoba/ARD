@@ -14,9 +14,10 @@ uint16_t freeMemory() {
     return free_memory;
 }
 
-//#include "eeprom_saves.h"
 #include "led_controller.h"
 #include "input_controller.h"
+#include "eeprom_momory.h"
+#include "color_modes_types.h"
 #include "color_modes.h"
 #include "color_music_mode.h"
 #include "audio_analyzer.h"
@@ -27,22 +28,27 @@ class Application {
 public:
     InputController input_controller;
     LedController led_controller;
-    AbstractColorMode* color_mode_p = nullptr;
-    ColorMode current_mode = COLOR_MUSIC;
-    Analyzer analyzer;
     BDSPTransmitter transmitter;
+    Analyzer analyzer;
+    EEPROMMemory memory;
+    AbstractColorMode* color_mode_p = nullptr;
 
     void init() {
         Serial.begin(SERIAL_SPEED);
-        Serial.println(PSTR("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
+        Serial.println(F("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
 
+        memory.init([] (void *context) {
+            auto &t = *reinterpret_cast<Application*>(context);
+            CreativeMode::init_colors(t.led_controller, t.memory.storage.creative_mode_segments_hues);
+            Serial.println(F("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
+        }, this);
 
         COBS::config_t config = {.delimiter = '\n', .depth = 255};
 
         transmitter.set_config(config, [] (uint8_t *data_p, size_t size, void *context) {
             Serial.write(data_p, size);
             Serial.flush();
-        });
+        }, nullptr);
 
         analyzer.init();
         analyzer.set_transmitter(transmitter);
@@ -56,7 +62,7 @@ public:
             auto &t = *reinterpret_cast<Application*>(context);
             switch (event) {
                 case CHANGE_BUTTON:
-                    t.set_mode(static_cast<ColorMode>(t.current_mode + 1));
+                    t.set_mode(static_cast<ColorMode>(t.memory.storage.current_mode + 1));
                     break;
                 case DECREASE_BUTTON:
                 case INCREASE_BUTTON:
@@ -64,12 +70,14 @@ public:
                     break;
             }
         },this);
-//        init_eeprom(context);
     }
 
     void loop() {
         input_controller.check();
         show_current_mode();
+        memory.tick();
+//        exit_timer(300);
+//        Serial.println(freeMemory());
     }
 
     ~Application() {
@@ -77,44 +85,46 @@ public:
     }
 
     void set_mode(ColorMode mode) {
-        current_mode = mode >= COLOR_MUSIC ? WHITE_MODE : mode;
+        mode = mode >= COLOR_MUSIC ? WHITE_MODE : mode;
+        if (mode not_eq memory.storage.current_mode) memory.update();
+        memory.storage.current_mode = mode;
         delete color_mode_p;
         switch (mode) {
             case WHITE_MODE:
-                color_mode_p = new WhiteMode;
+                color_mode_p = new WhiteMode(memory);
                 break;
             case CREATIVE_MODE:
-                color_mode_p = new FadeMode;
+                color_mode_p = new CreativeMode(memory, led_controller);
                 break;
             case FILL_WHITE_MODE:
-                color_mode_p = new FillWhiteMode;
+                color_mode_p = new FillWhiteMode(memory);
                 break;
             case MOVE_TO_CENTER_MODE:
-                color_mode_p = new ToCenterMode;
+                color_mode_p = new ToCenterMode(memory);
                 break;
             case FADE_MODE:
-                color_mode_p = new FadeMode;
+                color_mode_p = new FadeMode(memory);
                 break;
             case RAINBOW_MODE:
-                color_mode_p = new RainbowMode;
+                color_mode_p = new Rainbow1Mode(memory);
                 break;
             case RAINBOW2_MODE:
-                color_mode_p = new Rainbow2Mode;
+                color_mode_p = new Rainbow2Mode(memory);
                 break;
             case RAINBOW3_MODE:
-                color_mode_p = new Rainbow3Mode;
+                color_mode_p = new Rainbow3Mode(memory);
                 break;
             case FIRE_MODE:
-                color_mode_p = new FireMode;
+                color_mode_p = new FireMode(memory);
                 break;
             case COLOR_MUSIC:
-                color_mode_p = new ColorMusicMode(analyzer);
+                color_mode_p = new ColorMusicMode(memory, analyzer);
                 break;
         }
     }
 
     void show_current_mode() {
-        if (not color_mode_p) return set_mode(current_mode);
+        if (not color_mode_p) return set_mode(memory.storage.current_mode);
         bool is_need_show = color_mode_p->calculate(led_controller);
         if (is_need_show) led_controller.show();
     }

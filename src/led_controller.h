@@ -3,7 +3,6 @@
 
 #include "config.h"
 #include <FastLED.h>
-#include <Vector.h>
 
 uint8_t CRT(uint8_t power, float calibrate = 1.0) {
     return power > 0 ? (1 + uint16_t((calibrate * power * power + 255))) >> 8 : 0;
@@ -17,17 +16,16 @@ CRGB CRGB_f(CRGB color) {
     return {CRT(color.r), CRT(color.g), CRT(color.b)};
 }
 
-struct Segment {
+struct Segment final {
     uint16_t start;
     uint16_t end;
 };
 
 
-class LedController {
+class LedController final {
 private:
     CRGB leds[NUM_LEDS]{};
-    Vector<Segment> segments;
-    Segment _segment_memory[NUMBER_OF_SEGMENTS]{};
+    Segment segments[NUMBER_OF_SEGMENTS]{};
 public:
     void init() {
         CFastLED::addLeds<LED_TYPE, STRIP_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS);
@@ -40,7 +38,7 @@ public:
     }
 
     const Segment* get_segment(size_t index) {
-        if (index >= segments.size()) return nullptr;
+        if (index >= NUMBER_OF_SEGMENTS) return nullptr;
         return &segments[index];
     }
 
@@ -50,7 +48,7 @@ public:
     }
 
     void set_color_to_segment(uint8_t segment_id, CRGB color) {
-        if (segment_id >= segments.size()) return;
+        if (segment_id >= NUMBER_OF_SEGMENTS) return;
         fill_leds(color, segments[segment_id].start, segments[segment_id].end + 1);
     }
 
@@ -63,13 +61,12 @@ public:
         return NUM_LEDS;
     }
 
-    size_t number_of_segments() const {
-        return segments.size();
+    const size_t number_of_segments() {
+        return NUMBER_OF_SEGMENTS;
     }
 
 private:
     void init_segments() {
-        segments.setStorage(_segment_memory, NUMBER_OF_SEGMENTS, NUMBER_OF_SEGMENTS);
         segments[0] = {SECTOR_1_START, SECTOR_1_END};
         segments[1] = {SECTOR_2_START, SECTOR_2_END};
         segments[2] = {SECTOR_3_START, SECTOR_3_END};

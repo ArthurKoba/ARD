@@ -12,7 +12,7 @@
 
 enum AudioInformationIndexes {KICK = 0, FREQ1, FREQ2, FREQ3, FREQ4, FREQ5, HIGH_F, HI_HATS};
 
-struct AudioInformation {
+struct AudioInformation final {
     uint8_t kick = 0;
     uint8_t freq1 = 0;
     uint8_t freq2 = 0;
@@ -24,7 +24,7 @@ struct AudioInformation {
 };
 
 template<typename Type>
-class ValueHistory {
+class ValueHistory final {
 public:
     Type min = 0;
     Type max = 0;
@@ -51,7 +51,7 @@ public:
 };
 
 
-class Analyzer {
+class Analyzer final {
 public:
     ValueHistory<uint8_t> history[NUMBER_OF_SEGMENTS];
 

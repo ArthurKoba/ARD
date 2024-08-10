@@ -3,19 +3,14 @@
 
 #include "config.h"
 #include "stdint.h"
-
-
-#define _exit_timer(delay_ms) \
-    static uint32_t last_update = 0; \
-    if (millis() - last_update < (delay_ms)) return; \
-    last_update = millis()
+#include "utils.h"
 
 
 enum input_event_t {DECREASE_BUTTON = -1, CHANGE_BUTTON = 0, INCREASE_BUTTON = 1};
 typedef void (*input_controller_callback_t)(input_event_t, void *);
 
 
-class InputController {
+class InputController final{
 private:
     input_controller_callback_t _callback_p = nullptr;
     void *_callback_context_p = nullptr;
@@ -46,7 +41,7 @@ public:
 private:
     void check_change_mode_button() {
         static bool is_wait_release = false;
-        _exit_timer(BUTTONS_DELAY_MS);
+        exit_timer(BUTTONS_DELAY_MS);
         bool is_pressed = digitalRead(CHANGE_MODE_PIN);
 #if defined(BUTTONS_REVERSE_LEVELS)
         is_pressed = not is_pressed;
@@ -60,7 +55,7 @@ private:
     }
 
     void check_increase_button() {
-        _exit_timer(BUTTONS_DELAY_MS);
+        exit_timer(BUTTONS_DELAY_MS);
         bool is_pressed = digitalRead(INCREASE_PIN);
 #if defined(BUTTONS_REVERSE_LEVELS)
         is_pressed = not is_pressed;
@@ -70,7 +65,7 @@ private:
     }
 
     void check_decrease_button() {
-        _exit_timer(BUTTONS_DELAY_MS);
+        exit_timer(BUTTONS_DELAY_MS);
         bool is_pressed = digitalRead(DECREASE_PIN);
 #if defined(BUTTONS_REVERSE_LEVELS)
         is_pressed = not is_pressed;
