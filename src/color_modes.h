@@ -137,11 +137,10 @@ private:
             count_waits_ = 0;
             fullness = 0;
             is_fill = false;
-        } else if (fullness) {
-            fullness--;
-            controller.fill_leds(CRGB(fullness, fullness, fullness));
         } else if (fullness not_eq controller.number_of_leds()) {
+            fullness++;
             controller.fill_leds(CRGB::Black, 0, fullness);
+            controller.fill_leds(CRGB::White, fullness + 1);
         } else if (count_waits_ < count_wait){
             count_waits_++;
         } else {
