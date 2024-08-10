@@ -130,17 +130,19 @@ private:
             fullness++;
             controller.fill_leds(CRGB::White, 0, fullness);
             controller.fill_leds(CRGB::Black, fullness + 1);
-        } else if (is_fill and fullness == controller.number_of_leds() and count_waits_ < count_wait) {
+        } else if (is_fill and count_waits_ < count_wait) {
             controller.fill_leds(CRGB::White);
             count_waits_++;
-        } else if (is_fill and fullness == controller.number_of_leds() and count_waits_ >= count_wait) {
+        } else if (is_fill) {
             count_waits_ = 0;
+            fullness = 0;
             is_fill = false;
         } else if (fullness) {
             fullness--;
             controller.fill_leds(CRGB(fullness, fullness, fullness));
+        } else if (fullness not_eq controller.number_of_leds()) {
+            controller.fill_leds(CRGB::Black, 0, fullness);
         } else if (count_waits_ < count_wait){
-            controller.fill_leds(CRGB::Black);
             count_waits_++;
         } else {
             count_waits_ = 0;
