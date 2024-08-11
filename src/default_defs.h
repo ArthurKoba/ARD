@@ -145,7 +145,7 @@
 #endif
 
 #if not defined(AMPLITUDES_HISTORY_LENGTH)
-#define AMPLITUDES_HISTORY_LENGTH 16
+#define AMPLITUDES_HISTORY_LENGTH 5
 #endif
 
 #if not defined(DEFAULT_SAMPLE_OFFSET)

@@ -22,30 +22,24 @@ private:
         if (analyzer.calibrate_audio_analyzer()) {
             blink_mode.calculate(controller);
             return;
-        };
+        }
+
         analyzer.analyze_the_signal();
-        AudioInformation info = analyzer.calculate_colors();
+        FreqInformation info = analyzer.calculate_colors();
 
         auto *info_ = reinterpret_cast<uint8_t*>(&info);
-        uint8_t max_index = 1;
-        for (int i = 2; i < 6; ++i) {
-            if (info_[max_index] > info_[i]) max_index = i;
-        }
-        for (int i = 1; i < 6; ++i) {
-            if (i == max_index) info_[i] <<= 2;
-            else info_[i] >>= 4;
-        }
+        for (int i = 0; i < NUMBER_OF_AUDIO_INDEXES - 2; ++i) info_[i] = CRT(info_[i]);
 
-        controller.set_color_to_segment(0,  CRGB_f(info.kick, 0, 0));
-        controller.set_color_to_segment(1,  CRGB(0, info.freq1, 0));
-        controller.set_color_to_segment(2,  CRGB(info.freq2 >> 1, 0, info.freq2));
-        controller.set_color_to_segment(3,  CRGB(info.freq3, 0, info.freq3 >> 1));
-        controller.set_color_to_segment(4,  CRGB(info.freq4 >> 1, info.freq4, 0));
-        controller.set_color_to_segment(5,  CRGB(0, info.freq5, info.freq5 >> 1));
-        controller.set_color_to_segment(6,  CRGB(0, 0, info.high_f));
-        controller.set_color_to_segment(7,  CRGB(info.hi_hats, 0, info.hi_hats));
+        controller.set_color_to_segment(0,  CRGB(0, info.hi_hats, info.high));
+        controller.set_color_to_segment(1,  CRGB(info.low, 0, 0));
 
-    }
+        controller.set_color_to_segment(2,  CRGB(0, info.freq_g, info.freq_e));
+        controller.set_color_to_segment(3,  CRGB(info.freq_c, 0, info.freq_a >> 1));
+        controller.set_color_to_segment(4,  CRGB(0, info.freq_h, info.freq_f));
+        controller.set_color_to_segment(5,  CRGB(info.freq_fd, 0, info.freq_gd));
+        controller.set_color_to_segment(6,  CRGB(0, info.freq_b, info.freq_d));
+        controller.set_color_to_segment(7,  CRGB(info.freq_gd, info.freq_cd, 0));
+    }                                           // A B C D E F G H
 };
 
 
