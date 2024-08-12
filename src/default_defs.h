@@ -136,6 +136,10 @@
 #define COLOR_MUSIC_DEF_DELAY_MS 10
 #endif
 
+#if not defined(COLOR_MUSIC_BRIGHT_MUL)
+#define COLOR_MUSIC_BRIGHT_MUL 2
+#endif
+
 #if not defined(DELAY_BETWEEN_READ_SAMPLES_US)
 #define DELAY_BETWEEN_READ_SAMPLES_US 0
 #endif

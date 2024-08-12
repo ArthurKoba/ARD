@@ -50,11 +50,8 @@ private:
     uint16_t _get_show_delay() const override { return WHITE_MODE_DEF_DELAY_MS; }
 
     void _calculate(LedController &controller) override {
-        controller.fill_leds(CRGB_f(
-                mem.storage.white_mode_bright,
-                mem.storage.white_mode_bright,
-                mem.storage.white_mode_bright
-        ));
+        uint8_t bright_ = CRT(mem.storage.white_mode_bright);
+        controller.fill_leds(CRGB(bright_, bright_, bright_));
     }
 };
 
@@ -220,7 +217,8 @@ private:
         if (bright < 1) is_fade = false;
         if (bright > 254) is_fade = true;
 
-        controller.fill_leds(CRGB_f(bright, bright, bright));
+        bright = CRT(bright);
+        controller.fill_leds(CRGB(bright, bright, bright));
     }
 };
 

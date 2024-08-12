@@ -4,16 +4,14 @@
 #include "config.h"
 #include <FastLED.h>
 
+
+
 uint8_t CRT(uint8_t power, float calibrate = 1.0) {
+#if not defined(NO_CRT)
     return power > 0 ? (1 + uint16_t((calibrate * power * power + 255))) >> 8 : 0;
-}
-
-CRGB CRGB_f(uint8_t r, uint8_t g, uint8_t b) {
-    return {CRT(r), CRT(g), CRT(b)};
-}
-
-CRGB CRGB_f(CRGB color) {
-    return {CRT(color.r), CRT(color.g), CRT(color.b)};
+#else
+    return power;
+#endif
 }
 
 struct Segment final {

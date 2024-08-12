@@ -186,7 +186,7 @@ public:
         }
 
         for (int i = LENGTH_OF_SMOOTHED_AMPLITUDES; i < FHT_AMPLITUDES_N; ++i) {
-            if (amplitudes[i] > 5) amplitudes[i] <<= 4;
+            if (amplitudes[i] > 5) amplitudes[i] = constrain(amplitudes[i] << 3, 0, 255);
         }
 
 //        amplitudes[FHT_AMPLITUDES_N - 2] = freeMemory() / 10;
@@ -199,28 +199,28 @@ public:
     FreqInformation calculate_colors() {
         FreqInformation info;
 
-        info.low = calc_magnitude(LOW_FREQ, (amplitudes[1] + amplitudes[2]) >> 1, 10, 0, 3);
+        info.low = calc_magnitude(LOW_FREQ, (amplitudes[1] + amplitudes[2]) >> 1, 30, COLOR_MUSIC_BRIGHT_MUL, 2);
 
-        info.freq_g = calc_magnitude(FREQ_G, amplitudes[6], 10, 0, 4);
-        info.freq_c = calc_magnitude(FREQ_C, amplitudes[8], 10, 0, 4);
-        info.freq_d = calc_magnitude(FREQ_D, amplitudes[9], 10, 0, 4);
-        info.freq_e = calc_magnitude(FREQ_E, amplitudes[10], 10, 0, 4);
-        info.freq_h = calc_magnitude(FREQ_H, amplitudes[15], 10, 0, 4);
-        info.freq_cd = calc_magnitude(FREQ_Cd, amplitudes[17], 30, 0, 4);
-        info.freq_dd = calc_magnitude(FREQ_Dd, amplitudes[19], 30, 0, 4);
-        info.freq_f = calc_magnitude(FREQ_F, amplitudes[21], 30, 0, 4);
-        info.freq_fd = calc_magnitude(FREQ_Fd, amplitudes[23], 30, 0, 4);
-        info.freq_gd = calc_magnitude(FREQ_Gd, amplitudes[25], 30, 0, 4);
-        info.freq_a = calc_magnitude(FREQ_A, amplitudes[27], 30, 0, 4);
-        info.freq_b = calc_magnitude(FREQ_B, amplitudes[29], 30, 0, 4);
+        info.freq_g = calc_magnitude(FREQ_G, amplitudes[6], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_c = calc_magnitude(FREQ_C, amplitudes[8], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_d = calc_magnitude(FREQ_D, amplitudes[9], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_e = calc_magnitude(FREQ_E, amplitudes[10], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_h = calc_magnitude(FREQ_H, amplitudes[15], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_cd = calc_magnitude(FREQ_Cd, amplitudes[17], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_dd = calc_magnitude(FREQ_Dd, amplitudes[19], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_f = calc_magnitude(FREQ_F, amplitudes[21], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_fd = calc_magnitude(FREQ_Fd, amplitudes[23], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_gd = calc_magnitude(FREQ_Gd, amplitudes[25], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_a = calc_magnitude(FREQ_A, amplitudes[27], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq_b = calc_magnitude(FREQ_B, amplitudes[29], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
 
         uint16_t ampl = 0;
         for (int i = LENGTH_OF_SMOOTHED_AMPLITUDES; i < 80; ++i) if (amplitudes[i] > ampl) ampl = amplitudes[i];
-        info.high = (ampl <= 30) ? 0 : calc_magnitude(HIGH_F, ampl, 0, 1, 2);
+        info.high = (ampl <= 30) ? 0 : constrain(calc_magnitude(HIGH_F, ampl, 0, 1, 2) << (COLOR_MUSIC_BRIGHT_MUL + 1), 0, 255);
 
         ampl = 0;
         for (int i = 90; i < 126; ++i) if (amplitudes[i] > ampl) ampl = amplitudes[i];
-        info.hi_hats = (ampl <= 30) ? 0 : calc_magnitude(HI_HATS, ampl, 0, 1, 2);
+        info.hi_hats = (ampl <= 30) ? 0 : constrain(calc_magnitude(HI_HATS, ampl, 0, 1, 2) << (COLOR_MUSIC_BRIGHT_MUL + 1), 0, 255);
 
         return info;
     }

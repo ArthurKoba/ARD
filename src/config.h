@@ -54,6 +54,9 @@
 #define COLOR_MUSIC_DEF_DELAY_MS 5
 
 #if not defined(KOBA_CONF)
+
+//#define NO_CRT // если строка раскомментирована - CRT коррекция яркости отключена.
+
 #define SERIAL_SPEED 115200 // Скорость последовательного порта
 
 #define AUDIO_PIN 54 //  Пин аудио-сигнала (микрофона). Для меги: A0 - 54; A1 - 55, ..., A15 - 69. В общем смотрим pinout платы.
@@ -95,6 +98,9 @@
 #define SECTOR_8_START 375
 #define SECTOR_8_END 376
 #else
+
+//#define NO_CRT // если строка раскомментирована - CRT коррекция яркости отключена.
+#define COLOR_MUSIC_BRIGHT_MUL 1
 
 #define DEFAULT_SAMPLE_OFFSET 575
 #define SILENCE_AMPLITUDE_LEVEL 80
