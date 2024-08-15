@@ -41,14 +41,13 @@ public:
         led_controller.init();
 
 #if not defined(KOBA_CONF)
-//#if true
         memory.init([] (void *context) {
             auto &t = *reinterpret_cast<Application*>(context);
             CreativeMode::init_colors(t.led_controller, t.memory.storage.creative_mode_segments_hues);
             Serial.println(F("\nStart ARD Project. Code: https://github.com/ArthurKoba/ARD"));
         }, this);
 #else
-        memory.storage.current_mode = COLOR_MUSIC;
+        memory.storage.current_mode = COLOR_MUSIC_DETAIL;
 
         COBS::config_t config = {.delimiter = '\n', .depth = 255};
 
@@ -60,7 +59,8 @@ public:
         analyzer.set_transmitter(transmitter);
         analyzer.is_need_calibration = false;
 //        analyzer.is_send_samples = true;
-        analyzer.is_send_amplitudes = true;
+//        analyzer.is_send_amplitudes = true;
+        analyzer.is_send_freq = true;
 #endif
         input_controller.init([] (input_event_t event, void *context) {
             auto &t = *reinterpret_cast<Application*>(context);
@@ -88,7 +88,7 @@ public:
     }
 
     void set_mode(ColorMode mode) {
-        mode = mode > COLOR_MUSIC ? WHITE_MODE : mode;
+        mode = mode > COLOR_MUSIC_DETAIL ? WHITE_MODE : mode;
         if (mode not_eq memory.storage.current_mode) memory.update();
         memory.storage.current_mode = mode;
         delete color_mode_p;
@@ -122,6 +122,9 @@ public:
                 break;
             case COLOR_MUSIC:
                 color_mode_p = new ColorMusicMode(memory, analyzer);
+                break;
+            case COLOR_MUSIC_DETAIL:
+                color_mode_p = new ColorMusicDetailMode(memory, analyzer);
                 break;
         }
     }
