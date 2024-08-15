@@ -87,16 +87,16 @@
 #define SECTOR_4_END 323
 
 #define SECTOR_5_START 324
-#define SECTOR_5_END 350
+#define SECTOR_5_END 353
 
-#define SECTOR_6_START 351
-#define SECTOR_6_END 362
+#define SECTOR_6_START 354
+#define SECTOR_6_END 365
 
-#define SECTOR_7_START 363
-#define SECTOR_7_END 374
+#define SECTOR_7_START 366
+#define SECTOR_7_END 377
 
-#define SECTOR_8_START 375
-#define SECTOR_8_END 376
+#define SECTOR_8_START 378
+#define SECTOR_8_END 379
 #else
 
 //#define NO_CRT // если строка раскомментирована - CRT коррекция яркости отключена.
