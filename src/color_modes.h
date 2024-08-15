@@ -394,4 +394,49 @@ protected:
     }
 };
 
+class TestMoreSegmentsMode final: public AbstractColorMode {
+    uint8_t delay = 100;
+public:
+    explicit TestMoreSegmentsMode(EEPROMMemory &mem) : AbstractColorMode(mem) {}
+
+    void handle_input_event(input_event_t input) override {
+        uint16_t new_show_delay_ms = constrain(
+                int(delay) + input,
+                RAINBOW3_MODE_MIN_DELAY_MS,
+                RAINBOW3_MODE_MAX_DELAY_MS
+        );
+        if (new_show_delay_ms == delay) return;
+        delay = new_show_delay_ms;
+    }
+
+private:
+    uint16_t _get_show_delay() const override { return delay; }
+
+    void _calculate(LedController &controller) override {
+
+        static uint8_t i = 0;
+
+        controller.set_color_to_detail_segment(1, CRGB(i, 0, 0));
+        controller.set_color_to_detail_segment(2, CRGB(0, i, 0));
+        controller.set_color_to_detail_segment(3, CRGB(0, 0, i));
+
+        i += 20;
+
+        controller.set_color_to_detail_segment(4, CRGB::Blue);
+        controller.set_color_to_detail_segment(5, CRGB::Lime);
+        controller.set_color_to_detail_segment(6, CRGB::Red);
+        controller.set_color_to_detail_segment(7, CRGB::Yellow);
+
+        controller.set_color_to_detail_segment(8, CRGB::FireBrick);
+        controller.set_color_to_detail_segment(9, CRGB::OrangeRed);
+        controller.set_color_to_detail_segment(10, CRGB::HotPink);
+        controller.set_color_to_detail_segment(11, CRGB::White);
+
+        controller.set_color_to_detail_segment(12, CRGB::Purple);
+        controller.set_color_to_detail_segment(13, CRGB::Brown);
+        controller.set_color_to_detail_segment(14, CRGB::DarkCyan);
+        controller.set_color_to_detail_segment(15, CRGB::Grey);
+    }
+};
+
 #endif //ARD_COLOR_MODES_H
