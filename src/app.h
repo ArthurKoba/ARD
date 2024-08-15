@@ -60,7 +60,7 @@ public:
         analyzer.is_need_calibration = false;
 //        analyzer.is_send_samples = true;
 //        analyzer.is_send_amplitudes = true;
-        analyzer.is_send_freq = true;
+//        analyzer.is_send_freq = true;
 #endif
         input_controller.init([] (input_event_t event, void *context) {
             auto &t = *reinterpret_cast<Application*>(context);

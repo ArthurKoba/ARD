@@ -70,9 +70,20 @@ private:
         controller.set_color_to_detail_segment(2, CRGB(0, 0, info.high));
         controller.set_color_to_detail_segment(3, CRGB(0, info.hi_hats, info.hi_hats));
 
-        for (int i = 1; i < NUMBER_OF_FREQ_INDEXES - 2; ++i) {
-            controller.set_color_to_detail_segment(i + 3, CHSV(i * 20, 255, info_[i]));
-        }
+        controller.set_color_to_detail_segment(4, CHSV(40, 255, info.freq1));
+        controller.set_color_to_detail_segment(5, CHSV(40, 255, info.freq2));
+        controller.set_color_to_detail_segment(6, CHSV(40, 255, info.freq3));
+        controller.set_color_to_detail_segment(7, CHSV(40, 255, info.freq4));
+
+        controller.set_color_to_detail_segment(8, CHSV(100, 255, info.freq5));
+        controller.set_color_to_detail_segment(9, CHSV(110, 255, info.freq6));
+        controller.set_color_to_detail_segment(10, CHSV(80, 255, info.freq7));
+        controller.set_color_to_detail_segment(11, CHSV(120, 255, info.freq8));
+
+        controller.set_color_to_detail_segment(12, CHSV(170, 255, info.freq9));
+        controller.set_color_to_detail_segment(13, CHSV(190, 255, info.freq10));
+        controller.set_color_to_detail_segment(14, CHSV(150, 255, info.freq11));
+        controller.set_color_to_detail_segment(15, CHSV(210, 255, info.freq12));
     }
 };
 
