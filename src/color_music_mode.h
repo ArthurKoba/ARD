@@ -28,7 +28,7 @@ private:
         FreqInformation info = analyzer.calculate_colors();
 
         auto *info_ = reinterpret_cast<uint8_t*>(&info);
-        for (int i = 0; i < NUMBER_OF_AUDIO_INDEXES - 2; ++i) info_[i] = CRT(info_[i]);
+        for (int i = 0; i < NUMBER_OF_FREQ_INDEXES - 2; ++i) info_[i] = CRT(info_[i]);
 
         controller.set_color_to_segment(0,  CRGB(0, info.hi_hats, info.high));
         controller.set_color_to_segment(1,  CRGB(info.low, 0, 0));

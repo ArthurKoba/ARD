@@ -11,7 +11,7 @@
 
 enum FreqIndex {
     LOW_FREQ, FREQ_G, FREQ_C, FREQ_D, FREQ_E, FREQ_H, FREQ_Cd, FREQ_Dd,
-    FREQ_F, FREQ_Fd, FREQ_Gd, FREQ_A, FREQ_B, HIGH_F, HI_HATS, NUMBER_OF_AUDIO_INDEXES
+    FREQ_F, FREQ_Fd, FREQ_Gd, FREQ_A, FREQ_B, HIGH_F, HI_HATS, NUMBER_OF_FREQ_INDEXES
 };
 
 struct FreqInformation final {
@@ -80,7 +80,7 @@ public:
 
 class Analyzer final {
 public:
-    ValueHistory<uint8_t> history[NUMBER_OF_AUDIO_INDEXES];
+    ValueHistory<uint8_t> history[NUMBER_OF_FREQ_INDEXES];
 
     int16_t *samples = fht_input;
     uint8_t *amplitudes = reinterpret_cast<uint8_t *>(fht_lin_out8);
@@ -98,6 +98,7 @@ public:
     bool is_need_calibration = true;
     bool is_send_samples = false;
     bool is_send_amplitudes = false;
+    bool is_send_freq = false;
 
     void init() {
 
@@ -222,6 +223,9 @@ public:
         for (int i = 90; i < 126; ++i) if (amplitudes[i] > ampl) ampl = amplitudes[i];
         info.hi_hats = (ampl <= 30) ? 0 : constrain(calc_magnitude(HI_HATS, ampl, 0, 1, 2) << (COLOR_MUSIC_BRIGHT_MUL + 1), 0, 255);
 
+        if (is_send_freq and not is_send_amplitudes and transmitter) {
+            transmitter->send_data(2, reinterpret_cast<uint8_t*>(&info), NUMBER_OF_FREQ_INDEXES);
+        }
         return info;
     }
 
