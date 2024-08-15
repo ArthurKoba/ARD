@@ -127,6 +127,9 @@ public:
                 color_mode_p = new ColorMusicDetailMode(memory, analyzer);
                 break;
         }
+        if (mode == COLOR_MUSIC_DETAIL or mode == COLOR_MUSIC) {
+            led_controller.fill_leds(CRGB::Black);
+        }
     }
 
     void show_current_mode() {
