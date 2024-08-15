@@ -28,18 +28,18 @@ private:
         FreqInformation info = analyzer.calculate_colors();
 
         auto *info_ = reinterpret_cast<uint8_t*>(&info);
+        uint8_t high = info.hi_hats > info.high ? info.hi_hats : info.high;
         for (int i = 0; i < NUMBER_OF_FREQ_INDEXES - 2; ++i) info_[i] = CRT(info_[i]);
 
-        controller.set_color_to_segment(0,  CRGB(0, info.hi_hats, info.high));
-        controller.set_color_to_segment(1,  CRGB(info.low, 0, 0));
-
-        controller.set_color_to_segment(2,  CRGB(0, info.freq_g, info.freq_e));
-        controller.set_color_to_segment(3,  CRGB(info.freq_c, 0, info.freq_a >> 1));
-        controller.set_color_to_segment(4,  CRGB(0, info.freq_h, info.freq_f));
-        controller.set_color_to_segment(5,  CRGB(info.freq_fd, 0, info.freq_gd));
-        controller.set_color_to_segment(6,  CRGB(0, info.freq_b, info.freq_d));
-        controller.set_color_to_segment(7,  CRGB(info.freq_gd, info.freq_cd, 0));
-    }                                           // A B C D E F G H
+        controller.set_color_to_detail_segment(0,  CHSV(200, 175, high));
+        controller.set_color_to_segment(1,  CHSV(225, 255, info.low));
+        controller.set_color_to_segment(2,  CHSV(180, 220, info.freq1));
+        controller.set_color_to_segment(3,  CHSV(140, 255, info.freq4));
+        controller.set_color_to_segment(4,  CHSV(90, 255, info.freq5));
+        controller.set_color_to_segment(5,  CHSV(50, 255, info.freq8));
+        controller.set_color_to_segment(6,  CHSV(20, 255, info.freq9));
+        controller.set_color_to_segment(7,  CHSV(0, 255, info.freq12));
+    }
 };
 
 class ColorMusicDetailMode: public AbstractColorMode  {

@@ -10,24 +10,24 @@
 #include <BDSP.h>
 
 enum FreqIndex {
-    LOW_FREQ, FREQ_G, FREQ_C, FREQ_D, FREQ_E, FREQ_H, FREQ_Cd, FREQ_Dd,
-    FREQ_F, FREQ_Fd, FREQ_Gd, FREQ_A, FREQ_B, HIGH_F, HI_HATS, NUMBER_OF_FREQ_INDEXES
+    LOW_FREQ, FREQ1, FREQ2, FREQ3, FREQ4, FREQ5, FREQ6, FREQ7,
+    FREQ8, FREQ9, FREQ10, FREQ11, FREQ12, HIGH_FREQ, HI_HATS, NUMBER_OF_FREQ_INDEXES
 };
 
 struct FreqInformation final {
     uint8_t low = 0;
-    uint8_t freq_g = 0;
-    uint8_t freq_c = 0;
-    uint8_t freq_d = 0;
-    uint8_t freq_e = 0;
-    uint8_t freq_h = 0;
-    uint8_t freq_cd = 0;
-    uint8_t freq_dd = 0;
-    uint8_t freq_f = 0;
-    uint8_t freq_fd = 0;
-    uint8_t freq_gd = 0;
-    uint8_t freq_a = 0;
-    uint8_t freq_b = 0;
+    uint8_t freq1 = 0;
+    uint8_t freq2 = 0;
+    uint8_t freq3 = 0;
+    uint8_t freq4 = 0;
+    uint8_t freq5 = 0;
+    uint8_t freq6 = 0;
+    uint8_t freq7 = 0;
+    uint8_t freq8 = 0;
+    uint8_t freq9 = 0;
+    uint8_t freq10 = 0;
+    uint8_t freq11 = 0;
+    uint8_t freq12 = 0;
     uint8_t high = 0;
     uint8_t hi_hats = 0;
 };
@@ -187,7 +187,7 @@ public:
         }
 
         for (int i = LENGTH_OF_SMOOTHED_AMPLITUDES; i < FHT_AMPLITUDES_N; ++i) {
-            if (amplitudes[i] > 5) amplitudes[i] = constrain(amplitudes[i] << 3, 0, 255);
+            if (amplitudes[i] > 4) amplitudes[i] = constrain(amplitudes[i] << 3, 0, 255);
         }
 
 //        amplitudes[FHT_AMPLITUDES_N - 2] = freeMemory() / 10;
@@ -202,22 +202,22 @@ public:
 
         info.low = calc_magnitude(LOW_FREQ, (amplitudes[1] + amplitudes[2]) >> 1, 30, COLOR_MUSIC_BRIGHT_MUL, 2);
 
-        info.freq_g = calc_magnitude(FREQ_G, amplitudes[6], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_c = calc_magnitude(FREQ_C, amplitudes[8], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_d = calc_magnitude(FREQ_D, amplitudes[9], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_e = calc_magnitude(FREQ_E, amplitudes[10], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_h = calc_magnitude(FREQ_H, amplitudes[15], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_cd = calc_magnitude(FREQ_Cd, amplitudes[17], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_dd = calc_magnitude(FREQ_Dd, amplitudes[19], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_f = calc_magnitude(FREQ_F, amplitudes[21], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_fd = calc_magnitude(FREQ_Fd, amplitudes[23], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_gd = calc_magnitude(FREQ_Gd, amplitudes[25], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_a = calc_magnitude(FREQ_A, amplitudes[27], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
-        info.freq_b = calc_magnitude(FREQ_B, amplitudes[29], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq1 = calc_magnitude(FREQ1, amplitudes[4], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq2 = calc_magnitude(FREQ2, amplitudes[6], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq3 = calc_magnitude(FREQ3, amplitudes[8], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq4 = calc_magnitude(FREQ4, amplitudes[10], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq5 = calc_magnitude(FREQ5, amplitudes[13], 10, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq6 = calc_magnitude(FREQ6, amplitudes[15], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq7 = calc_magnitude(FREQ7, amplitudes[17], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq8 = calc_magnitude(FREQ8, amplitudes[19], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq9 = calc_magnitude(FREQ9, amplitudes[23], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq10 = calc_magnitude(FREQ10, amplitudes[25], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq11 = calc_magnitude(FREQ11, amplitudes[28], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
+        info.freq12 = calc_magnitude(FREQ12, amplitudes[31], 30, COLOR_MUSIC_BRIGHT_MUL, 4);
 
         uint16_t ampl = 0;
         for (int i = LENGTH_OF_SMOOTHED_AMPLITUDES; i < 80; ++i) if (amplitudes[i] > ampl) ampl = amplitudes[i];
-        info.high = (ampl <= 30) ? 0 : constrain(calc_magnitude(HIGH_F, ampl, 0, 1, 2) << (COLOR_MUSIC_BRIGHT_MUL + 1), 0, 255);
+        info.high = (ampl <= 30) ? 0 : constrain(calc_magnitude(HIGH_FREQ, ampl, 0, 1, 2) << (COLOR_MUSIC_BRIGHT_MUL + 1), 0, 255);
 
         ampl = 0;
         for (int i = 90; i < 126; ++i) if (amplitudes[i] > ampl) ampl = amplitudes[i];

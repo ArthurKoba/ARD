@@ -57,6 +57,26 @@ public:
     void set_color_to_detail_segment(uint8_t id, CRGB color) {
 #if not defined(KOBA_CONF)
         switch (id) {
+            case 0: // весь многоугольник
+                move_colors(173, 147);
+                leds[173] = color;
+                move_colors(174, 200);
+                leds[174] = color;
+                move_colors(65, 39);
+                leds[65] = color;
+                move_colors(66, 92);
+                leds[66] = color;
+                move_colors(215, 201);
+                leds[215] = leds[0];
+                move_colors(11, 0);
+                leds[11] = color;
+                move_colors(12, 38);
+                leds[12] = color;
+                move_colors(119, 93);
+                leds[119] = color;
+                move_colors(120, 146);
+                leds[120] = color;
+                break;
             case 1: // левый и правый многоугольник
                 move_colors(173, 147);
                 leds[173] = color;
@@ -97,7 +117,6 @@ public:
                 fill_leds(color, 235, 247 + 1);
                 fill_leds(color, 347, 349 + 1);
                 fill_leds(color, 351, 353 + 1);
-
                 break;
             case 7: // Yellow
                 fill_leds(color, 248, 260 + 1);
@@ -176,6 +195,9 @@ public:
         }
 #else
         switch (id) {
+            case 0: // левый и правый многоугольник
+                move_colors(3, 0);
+                leds[3] = color;
             case 1: // левый и правый многоугольник
                 move_colors(2, 0);
                 leds[2] = color;
