@@ -31,7 +31,7 @@ private:
         uint8_t high = info.hi_hats > info.high ? info.hi_hats : info.high;
         for (int i = 0; i < NUMBER_OF_FREQ_INDEXES - 2; ++i) info_[i] = CRT(info_[i]);
 
-        controller.set_color_to_detail_segment(0,  CHSV(200, 175, high));
+        controller.set_color_to_segment(0,  CHSV(200, 175, high));
         controller.set_color_to_segment(1,  CHSV(225, 255, info.low));
         controller.set_color_to_segment(2,  CHSV(180, 220, info.freq1));
         controller.set_color_to_segment(3,  CHSV(140, 255, info.freq4));
@@ -75,13 +75,13 @@ private:
         controller.set_color_to_detail_segment(6, CHSV(40, 255, info.freq3));
         controller.set_color_to_detail_segment(7, CHSV(40, 255, info.freq4));
 
-        controller.set_color_to_detail_segment(8, CHSV(100, 255, info.freq5));
-        controller.set_color_to_detail_segment(9, CHSV(110, 255, info.freq6));
+        controller.set_color_to_detail_segment(8, CHSV(90, 255, info.freq5));
+        controller.set_color_to_detail_segment(9, CHSV(100, 255, info.freq6));
         controller.set_color_to_detail_segment(10, CHSV(80, 255, info.freq7));
-        controller.set_color_to_detail_segment(11, CHSV(120, 255, info.freq8));
+        controller.set_color_to_detail_segment(11, CHSV(110, 255, info.freq8));
 
-        controller.set_color_to_detail_segment(12, CHSV(170, 255, info.freq9));
-        controller.set_color_to_detail_segment(13, CHSV(190, 255, info.freq10));
+        controller.set_color_to_detail_segment(12, CHSV(240, 255, info.freq9));
+        controller.set_color_to_detail_segment(13, CHSV(180, 255, info.freq10));
         controller.set_color_to_detail_segment(14, CHSV(150, 255, info.freq11));
         controller.set_color_to_detail_segment(15, CHSV(210, 255, info.freq12));
     }

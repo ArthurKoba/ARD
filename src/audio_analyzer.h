@@ -187,7 +187,7 @@ public:
         }
 
         for (int i = LENGTH_OF_SMOOTHED_AMPLITUDES; i < FHT_AMPLITUDES_N; ++i) {
-            if (amplitudes[i] > 4) amplitudes[i] = constrain(amplitudes[i] << 3, 0, 255);
+            if (amplitudes[i] > 5) amplitudes[i] = constrain(amplitudes[i] << 3, 0, 255);
         }
 
 //        amplitudes[FHT_AMPLITUDES_N - 2] = freeMemory() / 10;

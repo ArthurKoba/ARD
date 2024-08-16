@@ -38,7 +38,7 @@
 #define RAINBOW3_MODE_HUE_MUL 1
 #define RAINBOW3_MODE_SEGMENTS_OFFSET 31
 
-#define FIRE_MODE_DEF_DELAY_MS 10
+#define FIRE_MODE_DEF_DELAY_MS 3
 #define FIRE_MODE_HUE_GAP 34     // заброс по оттенку
 #define FIRE_MODE_FIRE_STEP 10    // шаг огня
 #define FIRE_MODE_HUE_START 160   // начальный цвет огня (0 красный, 80 зелёный, 140 молния, 190 розовый)
@@ -55,7 +55,7 @@
 
 #if not defined(KOBA_CONF)
 
-#define NO_CRT // если строка раскомментирована - CRT коррекция яркости отключена.
+//#define NO_CRT // если строка раскомментирована - CRT коррекция яркости отключена.
 
 #define SERIAL_SPEED 115200 // Скорость последовательного порта
 
